@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Алина, это для тебя ✨</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { height: 100%; overflow-x: hidden; }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at top, #1a0d2e 0%, #0a0416 55%, #030109 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  .star {
+    position: fixed;
+    background: #fff;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: twinkle 3s infinite ease-in-out;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.15; transform: scale(1); }
+    50%      { opacity: 0.9;  transform: scale(1.5); }
+  }
+
+  .container {
+    background: linear-gradient(160deg, rgba(35, 20, 60, 0.9), rgba(15, 7, 28, 0.95));
+    border: 1px solid rgba(212, 175, 55, 0.35);
+    border-radius: 22px;
+    padding: 50px 42px 42px;
+    max-width: 640px;
+    width: 100%;
+    box-shadow:
+      0 0 80px rgba(212, 175, 55, 0.12),
+      0 30px 90px rgba(0, 0, 0, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    animation: fadeIn 1.2s ease;
+  }
+
+  .container::before,
+  .container::after {
+    content: '';
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    border: 2px solid #d4af37;
+    opacity: 0.55;
+  }
+  .container::before {
+    top: 16px; left: 16px;
+    border-right: none; border-bottom: none;
+    border-top-left-radius: 10px;
+  }
+  .container::after {
+    bottom: 16px; right: 16px;
+    border-left: none; border-top: none;
+    border-bottom-right-radius: 10px;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .progress {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 30px;
+  }
+  .step {
+    width: 44px;
+    height: 3px;
+    background: rgba(212, 175, 55, 0.2);
+    border-radius: 2px;
+    transition: all 0.5s ease;
+  }
+  .step.done   { background: #d4af37; box-shadow: 0 0 10px rgba(212,175,55,0.7); }
+  .step.active { background: #ffd97d; box-shadow: 0 0 15px #ffd97d; transform: scaleY(2); }
+
+  .ornament {
+    font-size: 18px;
+    color: #d4af37;
+    letter-spacing: 10px;
+    margin-bottom: 14px;
+    opacity: 0.75;
+  }
+
+  .stage-title {
+    color: #f4e4bc;
+    font-size: 15px;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    opacity: 0.6;
+  }
+
+  h1 {
+    font-family: 'Georgia', serif;
+    color: #f4e4bc;
+    font-size: 25px;
+    font-weight: normal;
+    letter-spacing: 1px;
+    margin-bottom: 28px;
+    text-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+    line-height: 1.4;
+  }
+
+  .riddle {
+    color: #f4e4bc;
+    font-size: 17px;
+    line-height: 1.9;
+    font-style: italic;
+    text-align: left;
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    background: rgba(0, 0, 0, 0.28);
+    border-left: 3px solid #d4af37;
+    border-radius: 10px;
+    letter-spacing: 0.3px;
+  }
+  .riddle p { margin-bottom: 12px; }
+  .riddle p:last-child {
+    margin-bottom: 0;
+    color: #ffd97d;
+    font-weight: bold;
+    font-style: normal;
+    text-align: center;
+    margin-top: 18px;
+    font-size: 17px;
+    letter-spacing: 2px;
+  }
+
+  input {
+    width: 100%;
+    padding: 16px 20px;
+    border: 2px solid rgba(212, 175, 55, 0.4);
+    border-radius: 12px;
+    background: rgba(0, 0, 0, 0.45);
+    color: #f4e4bc;
+    font-size: 17px;
+    outline: none;
+    transition: all 0.3s;
+    text-align: center;
+    font-family: 'Georgia', serif;
+    letter-spacing: 2px;
+  }
+  input::placeholder {
+    color: rgba(244, 228, 188, 0.3);
+    letter-spacing: 1px;
+    font-style: italic;
+  }
+  input:focus {
+    border-color: #d4af37;
+    background: rgba(0, 0, 0, 0.65);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
+  }
+
+  button {
+    margin-top: 16px;
+    width: 100%;
+    padding: 15px;
+    border: 2px solid #d4af37;
+    border-radius: 12px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(212, 175, 55, 0.05));
+    color: #f4e4bc;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Georgia', serif;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+  }
+  button:hover {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), rgba(212, 175, 55, 0.15));
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+    transform: translateY(-2px);
+    color: #fff;
+  }
+  button:active { transform: translateY(0); }
+
+  .error {
+    color: #ff8a9b;
+    font-size: 14px;
+    margin-top: 14px;
+    min-height: 22px;
+    font-style: italic;
+    letter-spacing: 1px;
+  }
+
+  .hint-box {
+    margin-top: 16px;
+    padding: 0 18px;
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px dashed rgba(212, 175, 55, 0.4);
+    border-radius: 10px;
+    color: #ffd97d;
+    font-size: 14px;
+    font-style: italic;
+    letter-spacing: 0.5px;
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.6s ease;
+    text-align: left;
+    line-height: 1.7;
+  }
+  .hint-box.show {
+    opacity: 1;
+    max-height: 300px;
+    padding: 14px 18px;
+    margin-top: 16px;
+  }
+
+  .shake { animation: shake 0.5s; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-10px); }
+    40% { transform: translateX(10px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+  }
+
+  .stage { display: none; animation: fadeIn 0.8s ease; }
+  .stage.active { display: block; }
+
+  .phone-options {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+
+  .phone-option {
+    margin-top: 0;
+    padding: 20px 22px;
+    border: 2px solid rgba(212, 175, 55, 0.35);
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(0, 0, 0, 0.45), rgba(30, 18, 55, 0.5));
+    color: #f4e4bc;
+    font-family: 'Georgia', serif;
+    font-size: 17px;
+    font-weight: normal;
+    letter-spacing: 1.5px;
+    cursor: pointer;
+    transition: all 0.35s ease;
+    text-align: center;
+    text-transform: none;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .phone-option::before {
+    content: '📱';
+    font-size: 20px;
+    opacity: 0.7;
+    transition: all 0.3s;
+  }
+
+  .phone-option:hover:not(:disabled) {
+    border-color: #d4af37;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(212, 175, 55, 0.06));
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.35);
+    color: #fff;
+    letter-spacing: 2px;
+  }
+
+  .phone-option:hover:not(:disabled)::before {
+    opacity: 1;
+    transform: scale(1.15);
+  }
+
+  .phone-option.correct {
+    border-color: #7CFC00;
+    background: linear-gradient(135deg, rgba(124, 252, 0, 0.2), rgba(124, 252, 0, 0.05));
+    color: #b9ff7c;
+    box-shadow: 0 0 40px rgba(124, 252, 0, 0.7), 0 0 80px rgba(124, 252, 0, 0.4);
+    animation: correctPulse 0.8s ease;
+  }
+
+  .phone-option.correct::before {
+    content: '✓';
+    opacity: 1;
+    color: #7CFC00;
+    font-weight: bold;
+    font-size: 22px;
+  }
+
+  @keyframes correctPulse {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.06); }
+    100% { transform: scale(1); }
+  }
+
+  .phone-option.wrong {
+    border-color: #ff4d6d;
+    background: linear-gradient(135deg, rgba(255, 77, 109, 0.18), rgba(255, 77, 109, 0.05));
+    color: #ff8a9b;
+    animation: shake 0.5s;
+  }
+
+  .phone-option.wrong::before {
+    content: '✕';
+    opacity: 1;
+    color: #ff4d6d;
+    font-weight: bold;
+    font-size: 20px;
+  }
+
+  .phone-option:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+  }
+
+  .phone-option:disabled:hover {
+    transform: none;
+    box-shadow: none;
+    letter-spacing: 1.5px;
+  }
+
+  .phone-options-title {
+    color: rgba(244, 228, 188, 0.55);
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    font-style: italic;
+  }
+
+  /* ---------- Финал ---------- */
+  .final {
+    display: none;
+    animation: fadeIn 1.5s ease;
+    text-align: center;
+  }
+  .final.show { display: block; }
+
+  .final .small-head {
+    color: rgba(244, 228, 188, 0.6);
+    font-size: 14px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    opacity: 0;
+    animation: fadeUp 1s ease 0.3s forwards;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 0.6; transform: translateY(0); }
+  }
+
+  .final .name {
+    font-size: 62px;
+    letter-spacing: 8px;
+    color: #ffd97d;
+    margin: 10px 0 30px;
+    font-weight: bold;
+    text-shadow:
+      0 0 25px rgba(255, 217, 125, 0.9),
+      0 0 60px rgba(212, 175, 55, 0.6),
+      0 0 100px rgba(255, 105, 180, 0.4);
+    padding-left: 8px;
+  }
+  .final .name span {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(-40px) rotate(-20deg) scale(0.5);
+    animation: dropLetter 0.8s cubic-bezier(0.2, 1.4, 0.4, 1) forwards;
+  }
+  @keyframes dropLetter {
+    to { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
+  }
+
+  .final .message {
+    color: #f4e4bc;
+    font-size: 18px;
+    line-height: 1.9;
+    font-style: italic;
+    margin-bottom: 16px;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards;
+    padding: 0 10px;
+  }
+
+  .final .message.big {
+    font-size: 24px;
+    font-style: normal;
+    font-weight: bold;
+    color: #ffd97d;
+    letter-spacing: 2px;
+    text-shadow: 0 0 20px rgba(255, 217, 125, 0.6);
+    margin: 25px 0;
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards;
+  }
+
+  .final .divider {
+    color: #d4af37;
+    letter-spacing: 12px;
+    margin: 28px 0;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards;
+  }
+
+  .final .signature {
+    margin-top: 30px;
+    color: rgba(244, 228, 188, 0.7);
+    font-style: italic;
+    font-size: 16px;
+    letter-spacing: 1px;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards;
+  }
+  .final .signature b {
+    color: #ffd97d;
+    font-size: 22px;
+    letter-spacing: 3px;
+    display: block;
+    margin-top: 8px;
+    text-shadow: 0 0 15px rgba(255, 217, 125, 0.6);
+  }
+
+  .final .heart-icon {
+    font-size: 60px;
+    margin-bottom: 10px;
+    animation: heartPulse 1.4s ease-in-out infinite;
+    display: inline-block;
+    filter: drop-shadow(0 0 25px rgba(255, 105, 180, 0.9));
+  }
+  @keyframes heartPulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.2); }
+  }
+
+  .tg-block {
+    margin: 30px 0 10px;
+    opacity: 0;
+    animation: fadeUp 1.2s ease forwards;
+  }
+
+  .tg-label {
+    color: rgba(244, 228, 188, 0.65);
+    font-size: 15px;
+    font-style: italic;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+
+  .tg-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-decoration: none;
+    padding: 18px 34px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #2AABEE, #229ED9);
+    color: #fff;
+    font-family: 'Georgia', serif;
+    font-size: 17px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    box-shadow:
+      0 0 35px rgba(42, 171, 238, 0.5),
+      0 10px 30px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+    animation: tgPulse 2.5s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tg-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+    animation: shine 3s infinite;
+  }
+
+  @keyframes shine {
+    0% { left: -100%; }
+    50% { left: 100%; }
+    100% { left: 100%; }
+  }
+
+  @keyframes tgPulse {
+    0%, 100% { box-shadow: 0 0 35px rgba(42, 171, 238, 0.5), 0 10px 30px rgba(0,0,0,0.4); }
+    50%      { box-shadow: 0 0 60px rgba(42, 171, 238, 0.9), 0 10px 30px rgba(0,0,0,0.4); }
+  }
+
+  .tg-button:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow:
+      0 0 70px rgba(42, 171, 238, 1),
+      0 15px 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .tg-button:active { transform: translateY(0) scale(1); }
+
+  .tg-button svg {
+    width: 26px;
+    height: 26px;
+    flex-shrink: 0;
+  }
+
+  .tg-arrow {
+    display: inline-block;
+    animation: bounceDown 1.5s ease-in-out infinite;
+    font-size: 22px;
+    color: #2AABEE;
+    margin-bottom: 8px;
+  }
+
+  @keyframes bounceDown {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(8px); }
+  }
+
+  .heart-particle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 5;
+    will-change: transform, opacity;
+  }
+
+  @media (max-width: 540px) {
+    .container { padding: 38px 22px 30px; }
+    h1 { font-size: 20px; }
+    .riddle { font-size: 15px; padding: 18px 20px; line-height: 1.8; }
+    .phone-option { font-size: 15px; padding: 16px 14px; letter-spacing: 1px; }
+    .final .name { font-size: 42px; letter-spacing: 5px; }
+    .final .message { font-size: 15.5px; }
+    .final .message.big { font-size: 19px; }
+    .tg-button { font-size: 14px; padding: 15px 22px; letter-spacing: 1px; }
+    .tg-button svg { width: 22px; height: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="progress" id="progress"></div>
+
+  <!-- ЭТАП 1 -->
+  <div class="stage active" id="stage1">
+    <div class="ornament">✦ ✦ ✦</div>
+    <div class="stage-title">Этап 1 из 3</div>
+    <h1>Загадка первая:<br>что я прячу?</h1>
+
+    <div class="riddle">
+      <p>Я живу в твоём кармане и в твоей руке,</p>
+      <p>просыпаюсь от касания — и мир в ответ.</p>
+      <p>Во мне — твои фото, песни, переписки,</p>
+      <p>во мне — вся связь с теми, кто далеко.</p>
+
+      <p>Я — стеклянный, но храню твоё тепло,</p>
+      <p>я — то, без чего ты не выйдешь из дома.</p>
+
+      <p>Кто я?</p>
+    </div>
+
+    <input type="text" id="ans1" placeholder="Твой ответ..." autocomplete="off" spellcheck="false">
+    <button data-stage="1">Проверить</button>
+    <div class="error" id="err1"></div>
+    <div class="hint-box" id="hint1"></div>
+  </div>
+
+  <!-- ЭТАП 2 -->
+  <div class="stage" id="stage2">
+    <div class="ornament">✦ ✦ ✦</div>
+    <div class="stage-title">Этап 2 из 3</div>
+    <h1>А теперь — где я его взял?</h1>
+
+    <div class="riddle">
+      <p>Он не магазин, но в нём их миллион.</p>
+      <p>Он не почта, но посылки шлёт вагон.</p>
+      <p>Синяя коробка, синий кнопка, синий цвет —</p>
+      <p>там нашёл я твой будущий сюрприз, привет.</p>
+
+      <p>Пункт выдачи — как лес густой,</p>
+      <p>там пакеты ждут своей судьбой.</p>
+      <p>Скажи мне имя — и узнаешь вмиг,</p>
+      <p>где для тебя я чудо сотворил.</p>
+
+      <p>Где я его купил?</p>
+    </div>
+
+    <input type="text" id="ans2" placeholder="Название магазина..." autocomplete="off" spellcheck="false">
+    <button data-stage="2">Проверить</button>
+    <div class="error" id="err2"></div>
+    <div class="hint-box" id="hint2"></div>
+  </div>
+
+  <!-- ЭТАП 3 -->
+  <div class="stage" id="stage3">
+    <div class="ornament">✦ ✦ ✦</div>
+    <div class="stage-title">Этап 3 из 3</div>
+    <h1>Выбери модель телефона</h1>
+
+    <div class="riddle">
+      <p>Он родом из Кореи, гордый и прямой.</p>
+      <p>Название его — как имя, как покой.</p>
+      <p>Оно звучит как по-английски «я — твой друг»,</p>
+      <p>что «три звезды» хранит в себе вокруг.</p>
+
+      <p>Вторая буква в имени — как начало, как старт,</p>
+      <p>что первый сорт, что «А» — как высший балл.</p>
+      <p>А цифра в нём — как дважды трижды шесть,</p>
+      <p>и вместе — то, о чём ты скажешь: «Есть!»</p>
+
+      <p>Какой телефон я выбрал для тебя?</p>
+    </div>
+
+    <div class="phone-options-title">выбери один вариант</div>
+
+    <div class="phone-options">
+      <button class="phone-option" data-phone="xiaomi" data-correct="false">Xiaomi Redmi Note 14</button>
+      <button class="phone-option" data-phone="samsung" data-correct="true">Samsung Galaxy A36</button>
+      <button class="phone-option" data-phone="honor" data-correct="false">Honor X9c</button>
+    </div>
+
+    <div class="error" id="err3"></div>
+    <div class="hint-box" id="hint3"></div>
+  </div>
+
+  <!-- ФИНАЛ -->
+  <div class="final" id="final">
+    <span class="heart-icon">❤️</span>
+    <p class="small-head">ты разгадала всё</p>
+
+    <div class="name" id="nameReveal"></div>
+
+    <p class="message" id="msg1">Ты прошла весь путь — от первой строчки до последней.</p>
+    <p class="message" id="msg2">И знаешь, что я понял за это время?</p>
+
+    <p class="message big" id="msg3">Я очень сильно тебя люблю.</p>
+
+    <p class="message" id="msg4">Сильнее, чем можно уместить в слова, в подарки, в этот сайт. Ты — лучшее, что случилось со мной. Каждый день рядом с тобой — это подарок, который я не заслужил, но берегу как самое дорогое.</p>
+
+    <div class="divider" id="div1">✦ ✦ ✦</div>
+
+    <div class="tg-block" id="tgBlock">
+      <div class="tg-arrow">⬇</div>
+      <p class="tg-label">А самое главное — я оставил для тебя здесь 💛</p>
+      <a href="https://t.me/+xafnSoaXuuVhNWIy" target="_blank" rel="noopener" class="tg-button">
+        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.9-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.259-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.013-.15-.056-.212-.069-.062-.175-.041-.25-.024-.106.024-1.793 1.14-5.061 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.997-3.014 3.332-1.386 4.025-1.627 4.476-1.635.099-.002.321.023.465.14.121.098.155.23.152.325-.003.067-.04.334-.06.454z"/>
+        </svg>
+        ПЕРЕЙТИ В КАНАЛ
+      </a>
+    </div>
+
+    <div class="divider" id="div2">✦ ✦ ✦</div>
+
+    <p class="signature" id="signature">
+      С любовью, твой
+      <b>АНДРЕЙ</b>
+    </p>
+  </div>
+
+</div>
+
+<script>
+  const CORRECT_ANSWERS = {
+    1: ["телефон", "смартфон", "мобильник", "мобильный", "телефончик", "iphone", "айфон", "сотовый", "phone"],
+    2: ["озон", "ozon", "оzon"]
+  };
+
+  const HINTS = {
+    1: [
+      "💡 Подсказка: ты держишь это в руке чаще, чем что-либо ещё.",
+      "💡 Ещё: без него ты не выходишь из дома.",
+      "💡 Начинается на «Т», заканчивается на «Н», 8 букв."
+    ],
+    2: [
+      "💡 Подсказка: название магазина — 4 буквы.",
+      "💡 Синий логотип, синие пункты выдачи, посылки со всей страны.",
+      "💡 Начинается на «О», заканчивается на «Н»."
+    ],
+    3: [
+      "💡 Подсказка: вспомни, о каком бренде я говорил с восхищением.",
+      "💡 В названии бренда — 7 букв, начинается на «С».",
+      "💡 Модель: буква «A» + число «36»."
+    ]
+  };
+
+  const GIRL_NAME = "АЛИНА";
+  const totalStages = 3;
+
+  let currentStage = 1;
+  let wrongCounters = { 1: 0, 2: 0, 3: 0 };
+
+  const progressEl = document.getElementById('progress');
+  const container = document.querySelector('.container');
+
+  function buildProgress() {
+    progressEl.innerHTML = '';
+    for (let i = 1; i <= totalStages; i++) {
+      const s = document.createElement('div');
+      s.className = 'step';
+      if (i < currentStage) s.classList.add('done');
+      else if (i === currentStage) s.classList.add('active');
+      progressEl.appendChild(s);
+    }
+  }
+
+  function normalize(str) {
+    return str.toLowerCase().trim()
+      .replace(/ё/g, 'е')
+      .replace(/[.,!?;:]/g, '')
+      .replace(/\s+/g, ' ');
+  }
+
+  function showHint(stage) {
+    const count = wrongCounters[stage];
+    const hintBox = document.getElementById('hint' + stage);
+    if (!hintBox) return;
+    const hints = HINTS[stage];
+    if (count >= 1 && count <= hints.length) {
+      hintBox.innerHTML = hints.slice(0, count).join('<br>');
+      hintBox.classList.add('show');
+    }
+  }
+
+  function goToNextStage(fromStage) {
+    document.getElementById('stage' + fromStage).classList.remove('active');
+    currentStage++;
+    buildProgress();
+
+    if (currentStage > totalStages) {
+      showFinal();
+    } else {
+      document.getElementById('stage' + currentStage).classList.add('active');
+      const nextInput = document.getElementById('ans' + currentStage);
+      if (nextInput) setTimeout(() => nextInput.focus(), 100);
+    }
+  }
+
+  function checkStage(stage) {
+    const inputEl = document.getElementById('ans' + stage);
+    const errEl = document.getElementById('err' + stage);
+    const userAns = normalize(inputEl.value);
+
+    if (!userAns) {
+      errEl.textContent = 'Напиши свой ответ, любимая 💭';
+      return;
+    }
+
+    const correct = CORRECT_ANSWERS[stage].map(normalize);
+
+    if (correct.includes(userAns)) {
+      inputEl.style.borderColor = '#7CFC00';
+      inputEl.style.boxShadow = '0 0 30px rgba(124, 252, 0, 0.6)';
+      errEl.textContent = '✓ Верно!';
+      errEl.style.color = '#7CFC00';
+
+      miniBurst(20);
+      setTimeout(() => goToNextStage(stage), 700);
+    } else {
+      wrongCounters[stage]++;
+      errEl.textContent = 'Не то... Подумай ещё ✨';
+      errEl.style.color = '';
+      container.classList.add('shake');
+      setTimeout(() => container.classList.remove('shake'), 500);
+      inputEl.select();
+      showHint(stage);
+    }
+  }
+
+  function checkPhone(btn) {
+    const errEl = document.getElementById('err3');
+    const isCorrect = btn.dataset.correct === 'true';
+
+    if (isCorrect) {
+      btn.classList.add('correct');
+      errEl.textContent = '✓ Верно! Это Samsung Galaxy A36';
+      errEl.style.color = '#7CFC00';
+
+      document.querySelectorAll('.phone-option').forEach(b => b.disabled = true);
+
+      miniBurst(30);
+      setTimeout(() => goToNextStage(3), 1200);
+    } else {
+      btn.classList.add('wrong');
+      btn.disabled = true;
+      wrongCounters[3]++;
+
+      errEl.textContent = 'Не этот... Попробуй другой 💛';
+      errEl.style.color = '';
+      container.classList.add('shake');
+      setTimeout(() => container.classList.remove('shake'), 500);
+      showHint(3);
+    }
+  }
+
+  document.querySelectorAll('button[data-stage]').forEach(btn => {
+    const stage = parseInt(btn.dataset.stage);
+    btn.addEventListener('click', () => checkStage(stage));
+    const input = document.getElementById('ans' + stage);
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') checkStage(stage);
+    });
+  });
+
+  document.querySelectorAll('.phone-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.disabled) return;
+      checkPhone(btn);
+    });
+  });
+
+  function showFinal() {
+    progressEl.innerHTML = '';
+    document.getElementById('final').classList.add('show');
+
+    const nameEl = document.getElementById('nameReveal');
+    nameEl.innerHTML = '';
+    [...GIRL_NAME].forEach((ch, i) => {
+      const s = document.createElement('span');
+      s.textContent = ch;
+      s.style.animationDelay = (0.4 + i * 0.15) + 's';
+      nameEl.appendChild(s);
+    });
+
+    const delays = {
+      msg1: 1.8, msg2: 2.6, msg3: 3.6, msg4: 4.8,
+      div1: 5.8, tgBlock: 6.4, div2: 7.4, signature: 8.0
+    };
+    Object.entries(delays).forEach(([id, d]) => {
+      const el = document.getElementById(id);
+      if (el) el.style.animationDelay = d + 's';
+    });
+
+    setTimeout(() => startHeartRain(), 1000);
+    setTimeout(() => epicBurst(150), 3800);
+    setTimeout(() => epicBurst(120), 4500);
+    setTimeout(() => epicBurst(100), 5500);
+
+    setInterval(() => {
+      if (!document.hidden) spawnHeart();
+    }, 350);
+  }
+
+  function spawnHeart(initial = false) {
+    const h = document.createElement('div');
+    h.className = 'heart-particle';
+    const symbols = ['❤️', '💛', '💖', '💕', '💗', '✨', '🌸', '⭐'];
+    h.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+    h.style.left = Math.random() * 100 + 'vw';
+    h.style.top = initial ? (Math.random() * 100) + 'vh' : '-40px';
+    h.style.fontSize = (14 + Math.random() * 24) + 'px';
+    h.style.opacity = 0.85;
+    document.body.appendChild(h);
+
+    const duration = 5000 + Math.random() * 5000;
+    const drift = (Math.random() - 0.5) * 200;
+
+    h.animate([
+      { transform: `translate(0, 0) rotate(0deg)`, opacity: 0.9 },
+      { transform: `translate(${drift}px, ${window.innerHeight + 100}px) rotate(${(Math.random()-0.5)*720}deg)`, opacity: 0.2 }
+    ], {
+      duration: duration,
+      easing: 'linear',
+      fill: 'forwards'
+    });
+
+    setTimeout(() => h.remove(), duration);
+  }
+
+  function startHeartRain() {
+    for (let i = 0; i < 25; i++) {
+      setTimeout(() => spawnHeart(true), i * 120);
+    }
+  }
+
+  function miniBurst(count) {
+    const rect = container.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.className = 'star';
+      const size = 2 + Math.random() * 4;
+      p.style.width = size + 'px';
+      p.style.height = size + 'px';
+      p.style.left = cx + 'px';
+      p.style.top = cy + 'px';
+      p.style.background = Math.random() > 0.5 ? '#ffd97d' : '#fff';
+      p.style.boxShadow = '0 0 8px currentColor';
+
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 60 + Math.random() * 180;
+      const dx = Math.cos(angle) * dist;
+      const dy = Math.sin(angle) * dist;
+
+      p.animate([
+        { transform: 'translate(-50%, -50%) scale(0.5)', opacity: 1 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0)`, opacity: 0 }
+      ], {
+        duration: 900,
+        easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)',
+        fill: 'forwards'
+      });
+
+      document.body.appendChild(p);
+      setTimeout(() => p.remove(), 1000);
+    }
+  }
+
+  function epicBurst(count) {
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+
+    const colors = ['#ffd97d', '#ff69b4', '#fff', '#ffb6c1', '#d4af37', '#ff4d6d'];
+
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.className = 'heart-particle';
+      const isHeart = Math.random() > 0.4;
+      p.textContent = isHeart ? ['❤️', '💛', '💖', '💕'][Math.floor(Math.random()*4)] : '';
+      if (!isHeart) {
+        p.style.width = (3 + Math.random() * 5) + 'px';
+        p.style.height = p.style.width;
+        p.style.borderRadius = '50%';
+        p.style.background = colors[Math.floor(Math.random() * colors.length)];
+        p.style.boxShadow = `0 0 12px ${p.style.background}`;
+      } else {
+        p.style.fontSize = (14 + Math.random() * 22) + 'px';
+      }
+      p.style.left = cx + 'px';
+      p.style.top = cy + 'px';
+      p.style.transform = 'translate(-50%, -50%)';
+      p.style.opacity = 1;
+      document.body.appendChild(p);
+
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 150 + Math.random() * 500;
+      const dx = Math.cos(angle) * dist;
+      const dy = Math.sin(angle) * dist;
+      const rot = (Math.random() - 0.5) * 1080;
+
+      p.animate([
+        { transform: 'translate(-50%, -50%) scale(0) rotate(0deg)', opacity: 1 },
+        { transform: `translate(calc(-50% + ${dx*0.6}px), calc(-50% + ${dy*0.6}px)) scale(1.4) rotate(${rot*0.6}deg)`, opacity: 1, offset: 0.5 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.3) rotate(${rot}deg)`, opacity: 0 }
+      ], {
+        duration: 1800 + Math.random() * 1200,
+        easing: 'cubic-bezier(0.15, 0.75, 0.3, 1)',
+        fill: 'forwards'
+      });
+
+      setTimeout(() => p.remove(), 3200);
+    }
+  }
+
+  function createBgStar() {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = 1 + Math.random() * 2.5;
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.top = Math.random() * 100 + 'vh';
+    s.style.animationDelay = Math.random() * 3 + 's';
+    s.style.animationDuration = (2 + Math.random() * 4) + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 7000);
+  }
+
+  for (let i = 0; i < 50; i++) setTimeout(createBgStar, i * 40);
+  setInterval(createBgStar, 350);
+
+  buildProgress();
+  setTimeout(() => document.getElementById('ans1').focus(), 300);
+</script>
+</body>
+</html>
