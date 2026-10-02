@@ -10,7 +10,7 @@
 <meta name="application-name" content="Панель">
 <meta name="apple-mobile-web-app-title" content="Панель">
 <title>Панель управления</title>
-<link rel="manifest" href='data:application/manifest+json,{"name":"Панель Алины","short_name":"Панель","start_url":"./admin.html","scope":"./","display":"standalone","orientation":"portrait","background_color":"%231a0d2e","theme_color":"%231a0d2e","icons":[{"src":"data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2722%27 fill=%27%231a0d2e%27/%3E%3Crect x=%2710%27 y=%2710%27 width=%2780%27 height=%2780%27 rx=%2716%27 fill=%27none%27 stroke=%27%23d4af37%27 stroke-width=%273%27 stroke-dasharray=%276 4%27/%3E%3Ctext x=%2750%27 y=%2760%27 font-size=%2752%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27%3E%F0%9F%94%92%3C/text%3E%3C/svg%3E","sizes":"512x512","type":"image/svg+xml","purpose":"any"}]}'>
+<link rel="manifest" href="./manifest.json">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 rx=%2722%27 fill=%27%231a0d2e%27/%3E%3Ctext x=%2750%27 y=%2758%27 font-size=%2752%27 text-anchor=%27middle%27 dominant-baseline=%27middle%27%3E%F0%9F%94%92%3C/text%3E%3C/svg%3E">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -113,6 +113,13 @@
 <div class="toast" id="toast"></div>
 
 <script>
+  // Регистрация Service Worker для PWA
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+
   const FIREBASE_URL = 'https://alina-quest-default-rtdb.firebaseio.com';
   const DB_URL = FIREBASE_URL + '/unlocked.json';
 
