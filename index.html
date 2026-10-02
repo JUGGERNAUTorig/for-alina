@@ -6,9 +6,7 @@
 <title>Алина, это для тебя ✨</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
   html, body { height: 100%; overflow-x: hidden; }
-
   body {
     font-family: 'Georgia', 'Times New Roman', serif;
     min-height: 100vh;
@@ -16,11 +14,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px;
+    padding: 12px;
     position: relative;
     overflow-x: hidden;
   }
-
   .star {
     position: fixed;
     background: #fff;
@@ -32,201 +29,236 @@
     0%, 100% { opacity: 0.15; transform: scale(1); }
     50%      { opacity: 0.9;  transform: scale(1.5); }
   }
-
+  .intro {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    background: radial-gradient(ellipse at top, #1a0d2e 0%, #0a0416 55%, #030109 100%);
+    text-align: center;
+    transition: opacity 1.2s ease, transform 1.2s ease;
+    animation: fadeIn 1s ease;
+  }
+  .intro.hide { opacity: 0; transform: scale(1.05); pointer-events: none; }
+  .intro-heart {
+    font-size: 80px;
+    margin-bottom: 20px;
+    animation: introHeartPulse 1.6s ease-in-out infinite;
+    filter: drop-shadow(0 0 30px rgba(255, 105, 180, 0.9));
+  }
+  @keyframes introHeartPulse {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.15); }
+  }
+  .intro-ornament { font-size: 16px; color: #d4af37; letter-spacing: 12px; margin-bottom: 22px; opacity: 0.7; }
+  .intro-title {
+    font-family: 'Georgia', serif;
+    color: #f4e4bc;
+    font-size: 32px;
+    font-weight: normal;
+    letter-spacing: 2px;
+    line-height: 1.35;
+    margin-bottom: 14px;
+    text-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+    max-width: 620px;
+  }
+  .intro-title b {
+    color: #ffd97d;
+    font-weight: bold;
+    text-shadow: 0 0 25px rgba(255, 217, 125, 0.9), 0 0 60px rgba(212, 175, 55, 0.5);
+  }
+  .intro-subtitle {
+    color: rgba(244, 228, 188, 0.7);
+    font-size: 16px;
+    font-style: italic;
+    letter-spacing: 1px;
+    margin-bottom: 44px;
+    line-height: 1.6;
+    max-width: 460px;
+  }
+  .intro-btn {
+    padding: 18px 46px;
+    border: 2px solid #d4af37;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(212, 175, 55, 0.06));
+    color: #f4e4bc;
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.35s ease;
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.25), 0 0 60px rgba(255, 105, 180, 0.1);
+    animation: introBtnPulse 2.5s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .intro-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 217, 125, 0.4), transparent);
+    animation: introShine 3s infinite;
+  }
+  @keyframes introShine { 0% { left: -100%; } 50% { left: 100%; } 100% { left: 100%; } }
+  @keyframes introBtnPulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(212, 175, 55, 0.25), 0 0 60px rgba(255, 105, 180, 0.1); }
+    50%      { box-shadow: 0 0 50px rgba(212, 175, 55, 0.6), 0 0 100px rgba(255, 105, 180, 0.3); }
+  }
+  .intro-btn:hover {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.45), rgba(212, 175, 55, 0.15));
+    transform: translateY(-3px) scale(1.04);
+    color: #fff;
+  }
+  .intro-footer {
+    position: absolute;
+    bottom: 30px; left: 0; right: 0;
+    text-align: center;
+    color: rgba(244, 228, 188, 0.4);
+    font-size: 12px;
+    font-style: italic;
+    letter-spacing: 2px;
+    padding: 0 24px;
+  }
   .container {
     background: linear-gradient(160deg, rgba(35, 20, 60, 0.9), rgba(15, 7, 28, 0.95));
     border: 1px solid rgba(212, 175, 55, 0.35);
-    border-radius: 22px;
-    padding: 50px 42px 42px;
-    max-width: 640px;
+    border-radius: 18px;
+    padding: 28px 30px 26px;
+    max-width: 560px;
     width: 100%;
-    box-shadow:
-      0 0 80px rgba(212, 175, 55, 0.12),
-      0 30px 90px rgba(0, 0, 0, 0.8),
-      inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    max-height: calc(100vh - 24px);
+    overflow-y: auto;
+    box-shadow: 0 0 60px rgba(212, 175, 55, 0.12), 0 20px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.06);
     text-align: center;
     position: relative;
     z-index: 10;
     animation: fadeIn 1.2s ease;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(212, 175, 55, 0.4) transparent;
   }
-
-  .container::before,
-  .container::after {
+  .container::-webkit-scrollbar { width: 6px; }
+  .container::-webkit-scrollbar-track { background: transparent; }
+  .container::-webkit-scrollbar-thumb { background: rgba(212, 175, 55, 0.4); border-radius: 3px; }
+  .container::before, .container::after {
     content: '';
     position: absolute;
-    width: 44px;
-    height: 44px;
+    width: 32px; height: 32px;
     border: 2px solid #d4af37;
     opacity: 0.55;
+    pointer-events: none;
   }
-  .container::before {
-    top: 16px; left: 16px;
-    border-right: none; border-bottom: none;
-    border-top-left-radius: 10px;
-  }
-  .container::after {
-    bottom: 16px; right: 16px;
-    border-left: none; border-top: none;
-    border-bottom-right-radius: 10px;
-  }
-
+  .container::before { top: 10px; left: 10px; border-right: none; border-bottom: none; border-top-left-radius: 8px; }
+  .container::after { bottom: 10px; right: 10px; border-left: none; border-top: none; border-bottom-right-radius: 8px; }
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(30px); }
     to   { opacity: 1; transform: translateY(0); }
   }
-
-  .progress {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 30px;
-  }
-  .step {
-    width: 44px;
-    height: 3px;
-    background: rgba(212, 175, 55, 0.2);
-    border-radius: 2px;
-    transition: all 0.5s ease;
-  }
+  .progress { display: flex; justify-content: center; align-items: center; gap: 6px; margin-bottom: 16px; }
+  .step { width: 36px; height: 3px; background: rgba(212, 175, 55, 0.2); border-radius: 2px; transition: all 0.5s ease; }
   .step.done   { background: #d4af37; box-shadow: 0 0 10px rgba(212,175,55,0.7); }
   .step.active { background: #ffd97d; box-shadow: 0 0 15px #ffd97d; transform: scaleY(2); }
-
-  .ornament {
-    font-size: 18px;
-    color: #d4af37;
-    letter-spacing: 10px;
-    margin-bottom: 14px;
-    opacity: 0.75;
-  }
-
-  .stage-title {
-    color: #f4e4bc;
-    font-size: 15px;
-    letter-spacing: 5px;
-    text-transform: uppercase;
-    margin-bottom: 8px;
-    opacity: 0.6;
-  }
-
+  .ornament { font-size: 14px; color: #d4af37; letter-spacing: 8px; margin-bottom: 8px; opacity: 0.7; }
+  .stage-title { color: #f4e4bc; font-size: 12px; letter-spacing: 4px; text-transform: uppercase; margin-bottom: 6px; opacity: 0.6; }
   h1 {
     font-family: 'Georgia', serif;
     color: #f4e4bc;
-    font-size: 25px;
+    font-size: 19px;
     font-weight: normal;
-    letter-spacing: 1px;
-    margin-bottom: 28px;
-    text-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
-    line-height: 1.4;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+    line-height: 1.35;
   }
-
   .riddle {
     color: #f4e4bc;
-    font-size: 17px;
-    line-height: 1.9;
+    font-size: 14.5px;
+    line-height: 1.65;
     font-style: italic;
     text-align: left;
-    padding: 24px 28px;
-    margin-bottom: 28px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
     background: rgba(0, 0, 0, 0.28);
     border-left: 3px solid #d4af37;
     border-radius: 10px;
-    letter-spacing: 0.3px;
+    letter-spacing: 0.2px;
   }
-  .riddle p { margin-bottom: 12px; }
+  .riddle p { margin-bottom: 6px; }
   .riddle p:last-child {
     margin-bottom: 0;
     color: #ffd97d;
     font-weight: bold;
     font-style: normal;
     text-align: center;
-    margin-top: 18px;
-    font-size: 17px;
+    margin-top: 12px;
+    font-size: 15px;
     letter-spacing: 2px;
   }
-
   input {
     width: 100%;
-    padding: 16px 20px;
+    padding: 12px 16px;
     border: 2px solid rgba(212, 175, 55, 0.4);
-    border-radius: 12px;
+    border-radius: 10px;
     background: rgba(0, 0, 0, 0.45);
     color: #f4e4bc;
-    font-size: 17px;
+    font-size: 15px;
     outline: none;
     transition: all 0.3s;
     text-align: center;
     font-family: 'Georgia', serif;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
   }
-  input::placeholder {
-    color: rgba(244, 228, 188, 0.3);
-    letter-spacing: 1px;
-    font-style: italic;
-  }
-  input:focus {
-    border-color: #d4af37;
-    background: rgba(0, 0, 0, 0.65);
-    box-shadow: 0 0 25px rgba(212, 175, 55, 0.4);
-  }
-
-  button {
-    margin-top: 16px;
+  input::placeholder { color: rgba(244, 228, 188, 0.3); letter-spacing: 1px; font-style: italic; }
+  input:focus { border-color: #d4af37; background: rgba(0, 0, 0, 0.65); box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); }
+  button.check {
+    margin-top: 12px;
     width: 100%;
-    padding: 15px;
+    padding: 12px;
     border: 2px solid #d4af37;
-    border-radius: 12px;
+    border-radius: 10px;
     background: linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(212, 175, 55, 0.05));
     color: #f4e4bc;
-    font-size: 15px;
+    font-size: 13px;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.3s;
     font-family: 'Georgia', serif;
-    letter-spacing: 4px;
+    letter-spacing: 3px;
     text-transform: uppercase;
   }
-  button:hover {
+  button.check:hover {
     background: linear-gradient(135deg, rgba(212, 175, 55, 0.4), rgba(212, 175, 55, 0.15));
-    box-shadow: 0 0 30px rgba(212, 175, 55, 0.5);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
     transform: translateY(-2px);
     color: #fff;
   }
-  button:active { transform: translateY(0); }
-
-  .error {
-    color: #ff8a9b;
-    font-size: 14px;
-    margin-top: 14px;
-    min-height: 22px;
-    font-style: italic;
-    letter-spacing: 1px;
-  }
-
+  button.check:active { transform: translateY(0); }
+  .error { color: #ff8a9b; font-size: 13px; margin-top: 10px; min-height: 18px; font-style: italic; letter-spacing: 1px; }
   .hint-box {
-    margin-top: 16px;
-    padding: 0 18px;
+    margin-top: 12px;
+    padding: 0 16px;
     background: rgba(212, 175, 55, 0.08);
     border: 1px dashed rgba(212, 175, 55, 0.4);
     border-radius: 10px;
     color: #ffd97d;
-    font-size: 14px;
+    font-size: 12.5px;
     font-style: italic;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.3px;
     opacity: 0;
     max-height: 0;
     overflow: hidden;
     transition: all 0.6s ease;
     text-align: left;
-    line-height: 1.7;
+    line-height: 1.55;
   }
-  .hint-box.show {
-    opacity: 1;
-    max-height: 300px;
-    padding: 14px 18px;
-    margin-top: 16px;
-  }
-
+  .hint-box.show { opacity: 1; max-height: 250px; padding: 11px 16px; margin-top: 12px; }
   .shake { animation: shake 0.5s; }
   @keyframes shake {
     0%, 100% { transform: translateX(0); }
@@ -235,28 +267,20 @@
     60% { transform: translateX(-6px); }
     80% { transform: translateX(6px); }
   }
-
   .stage { display: none; animation: fadeIn 0.8s ease; }
   .stage.active { display: block; }
-
-  .phone-options {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin-bottom: 10px;
-  }
-
+  .phone-options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 8px; }
   .phone-option {
     margin-top: 0;
-    padding: 20px 22px;
+    padding: 14px 16px;
     border: 2px solid rgba(212, 175, 55, 0.35);
-    border-radius: 14px;
+    border-radius: 12px;
     background: linear-gradient(135deg, rgba(0, 0, 0, 0.45), rgba(30, 18, 55, 0.5));
     color: #f4e4bc;
     font-family: 'Georgia', serif;
-    font-size: 17px;
+    font-size: 15px;
     font-weight: normal;
-    letter-spacing: 1.5px;
+    letter-spacing: 1.2px;
     cursor: pointer;
     transition: all 0.35s ease;
     text-align: center;
@@ -266,121 +290,75 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
   }
-
   .phone-option::before {
     content: '📱';
-    font-size: 20px;
+    font-size: 17px;
     opacity: 0.7;
     transition: all 0.3s;
   }
-
   .phone-option:hover:not(:disabled) {
     border-color: #d4af37;
     background: linear-gradient(135deg, rgba(212, 175, 55, 0.18), rgba(212, 175, 55, 0.06));
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.35);
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.35);
     color: #fff;
-    letter-spacing: 2px;
   }
-
-  .phone-option:hover:not(:disabled)::before {
-    opacity: 1;
-    transform: scale(1.15);
-  }
-
+  .phone-option:hover:not(:disabled)::before { opacity: 1; transform: scale(1.15); }
   .phone-option.correct {
     border-color: #7CFC00;
     background: linear-gradient(135deg, rgba(124, 252, 0, 0.2), rgba(124, 252, 0, 0.05));
     color: #b9ff7c;
-    box-shadow: 0 0 40px rgba(124, 252, 0, 0.7), 0 0 80px rgba(124, 252, 0, 0.4);
+    box-shadow: 0 0 35px rgba(124, 252, 0, 0.7), 0 0 70px rgba(124, 252, 0, 0.4);
     animation: correctPulse 0.8s ease;
   }
-
-  .phone-option.correct::before {
-    content: '✓';
-    opacity: 1;
-    color: #7CFC00;
-    font-weight: bold;
-    font-size: 22px;
-  }
-
+  .phone-option.correct::before { content: '✓'; opacity: 1; color: #7CFC00; font-weight: bold; font-size: 19px; }
   @keyframes correctPulse {
     0%   { transform: scale(1); }
-    40%  { transform: scale(1.06); }
+    40%  { transform: scale(1.05); }
     100% { transform: scale(1); }
   }
-
   .phone-option.wrong {
     border-color: #ff4d6d;
     background: linear-gradient(135deg, rgba(255, 77, 109, 0.18), rgba(255, 77, 109, 0.05));
     color: #ff8a9b;
     animation: shake 0.5s;
   }
-
-  .phone-option.wrong::before {
-    content: '✕';
-    opacity: 1;
-    color: #ff4d6d;
-    font-weight: bold;
-    font-size: 20px;
-  }
-
-  .phone-option:disabled {
-    cursor: not-allowed;
-    opacity: 0.55;
-  }
-
-  .phone-option:disabled:hover {
-    transform: none;
-    box-shadow: none;
-    letter-spacing: 1.5px;
-  }
-
+  .phone-option.wrong::before { content: '✕'; opacity: 1; color: #ff4d6d; font-weight: bold; font-size: 17px; }
+  .phone-option:disabled { cursor: not-allowed; opacity: 0.55; }
+  .phone-option:disabled:hover { transform: none; box-shadow: none; }
   .phone-options-title {
     color: rgba(244, 228, 188, 0.55);
-    font-size: 13px;
-    letter-spacing: 3px;
+    font-size: 11px;
+    letter-spacing: 2.5px;
     text-transform: uppercase;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     font-style: italic;
   }
-
-  /* ---------- Финал ---------- */
-  .final {
-    display: none;
-    animation: fadeIn 1.5s ease;
-    text-align: center;
-  }
+  .final { display: none; animation: fadeIn 1.5s ease; text-align: center; }
   .final.show { display: block; }
-
   .final .small-head {
     color: rgba(244, 228, 188, 0.6);
-    font-size: 14px;
-    letter-spacing: 6px;
+    font-size: 12px;
+    letter-spacing: 5px;
     text-transform: uppercase;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     opacity: 0;
     animation: fadeUp 1s ease 0.3s forwards;
   }
-
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
     to   { opacity: 0.6; transform: translateY(0); }
   }
-
   .final .name {
-    font-size: 62px;
-    letter-spacing: 8px;
+    font-size: 42px;
+    letter-spacing: 6px;
     color: #ffd97d;
-    margin: 10px 0 30px;
+    margin: 4px 0 16px;
     font-weight: bold;
-    text-shadow:
-      0 0 25px rgba(255, 217, 125, 0.9),
-      0 0 60px rgba(212, 175, 55, 0.6),
-      0 0 100px rgba(255, 105, 180, 0.4);
-    padding-left: 8px;
+    text-shadow: 0 0 25px rgba(255, 217, 125, 0.9), 0 0 60px rgba(212, 175, 55, 0.6), 0 0 100px rgba(255, 105, 180, 0.4);
+    padding-left: 6px;
   }
   .final .name span {
     display: inline-block;
@@ -391,60 +369,55 @@
   @keyframes dropLetter {
     to { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
   }
-
   .final .message {
     color: #f4e4bc;
-    font-size: 18px;
-    line-height: 1.9;
+    font-size: 14px;
+    line-height: 1.7;
     font-style: italic;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     opacity: 0;
     animation: fadeUp 1.2s ease forwards;
-    padding: 0 10px;
+    padding: 0 6px;
   }
-
   .final .message.big {
-    font-size: 24px;
+    font-size: 18px;
     font-style: normal;
     font-weight: bold;
     color: #ffd97d;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
     text-shadow: 0 0 20px rgba(255, 217, 125, 0.6);
-    margin: 25px 0;
-    line-height: 1.6;
+    margin: 14px 0;
+    line-height: 1.5;
     opacity: 0;
     animation: fadeUp 1.2s ease forwards;
   }
-
   .final .divider {
     color: #d4af37;
-    letter-spacing: 12px;
-    margin: 28px 0;
+    letter-spacing: 10px;
+    margin: 14px 0;
     opacity: 0;
     animation: fadeUp 1s ease forwards;
   }
-
   .final .signature {
-    margin-top: 30px;
+    margin-top: 16px;
     color: rgba(244, 228, 188, 0.7);
     font-style: italic;
-    font-size: 16px;
+    font-size: 13px;
     letter-spacing: 1px;
     opacity: 0;
     animation: fadeUp 1.2s ease forwards;
   }
   .final .signature b {
     color: #ffd97d;
-    font-size: 22px;
+    font-size: 17px;
     letter-spacing: 3px;
     display: block;
-    margin-top: 8px;
+    margin-top: 4px;
     text-shadow: 0 0 15px rgba(255, 217, 125, 0.6);
   }
-
   .final .heart-icon {
-    font-size: 60px;
-    margin-bottom: 10px;
+    font-size: 44px;
+    margin-bottom: 4px;
     animation: heartPulse 1.4s ease-in-out infinite;
     display: inline-block;
     filter: drop-shadow(0 0 25px rgba(255, 105, 180, 0.9));
@@ -453,240 +426,404 @@
     0%, 100% { transform: scale(1); }
     50%      { transform: scale(1.2); }
   }
-
-  .tg-block {
-    margin: 30px 0 10px;
-    opacity: 0;
-    animation: fadeUp 1.2s ease forwards;
+  .tg-block { margin: 18px 0 6px; opacity: 0; animation: fadeUp 1.2s ease forwards; }
+  .tg-label { color: rgba(244, 228, 188, 0.65); font-size: 13px; font-style: italic; letter-spacing: 0.5px; margin-bottom: 12px; }
+  .tg-locked {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    padding: 20px 22px;
+    border: 2px dashed rgba(212, 175, 55, 0.5);
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.07), rgba(212, 175, 55, 0.02));
+    max-width: 100%;
+    width: 100%;
+    animation: fadeIn 0.8s ease;
   }
-
-  .tg-label {
-    color: rgba(244, 228, 188, 0.65);
+  .tg-lock-icon {
+    font-size: 40px;
+    animation: lockPulse 2.2s ease-in-out infinite;
+    filter: drop-shadow(0 0 18px rgba(212, 175, 55, 0.6));
+    line-height: 1;
+  }
+  @keyframes lockPulse {
+    0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.85; }
+    50%      { transform: scale(1.08) rotate(-3deg); opacity: 1; }
+  }
+  .tg-locked-title {
+    color: #ffd97d;
     font-size: 15px;
-    font-style: italic;
-    letter-spacing: 1px;
-    margin-bottom: 16px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    text-shadow: 0 0 15px rgba(255, 217, 125, 0.5);
   }
-
+  .tg-locked-text {
+    color: rgba(244, 228, 188, 0.75);
+    font-size: 12.5px;
+    font-style: italic;
+    letter-spacing: 0.3px;
+    line-height: 1.6;
+    text-align: center;
+    max-width: 340px;
+  }
+  .tg-countdown { display: flex; gap: 6px; margin-top: 2px; justify-content: center; flex-wrap: wrap; }
+  .tg-count-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 52px;
+    padding: 8px 6px 7px;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(212, 175, 55, 0.4);
+    border-radius: 10px;
+    box-shadow: inset 0 0 15px rgba(212, 175, 55, 0.08), 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+  .tg-count-num {
+    font-size: 21px;
+    font-weight: bold;
+    color: #ffd97d;
+    text-shadow: 0 0 12px rgba(255, 217, 125, 0.7);
+    font-family: 'Georgia', serif;
+    letter-spacing: 1px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .tg-count-label {
+    font-size: 8.5px;
+    color: rgba(244, 228, 188, 0.5);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-top: 4px;
+    font-style: italic;
+  }
+  .tg-count-sep { font-size: 18px; color: rgba(212, 175, 55, 0.4); align-self: center; padding: 0 1px; font-weight: bold; }
+  .tg-track-info {
+    margin-top: 4px;
+    font-size: 11px;
+    color: rgba(244, 228, 188, 0.45);
+    font-style: italic;
+    letter-spacing: 0.3px;
+    line-height: 1.55;
+    text-align: center;
+  }
+  .tg-track-info b { color: rgba(244, 228, 188, 0.7); font-family: 'Courier New', monospace; letter-spacing: 1.5px; font-style: normal; }
+  .tg-check-btn {
+    margin-top: 6px;
+    padding: 8px 20px;
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    border-radius: 8px;
+    background: transparent;
+    color: rgba(244, 228, 188, 0.8);
+    font-family: 'Georgia', serif;
+    font-size: 10.5px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .tg-check-btn:hover {
+    background: rgba(212, 175, 55, 0.15);
+    color: #fff;
+    border-color: #d4af37;
+    box-shadow: 0 0 18px rgba(212, 175, 55, 0.4);
+  }
+  .tg-check-btn:active { transform: scale(0.97); }
+  .tg-check-btn:disabled { opacity: 0.6; cursor: wait; }
+  .tg-unlocked {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    animation: unlockCelebration 1.2s cubic-bezier(0.2, 1.4, 0.4, 1);
+  }
+  @keyframes unlockCelebration {
+    0%   { transform: scale(0.7); opacity: 0; filter: blur(4px); }
+    50%  { transform: scale(1.08); opacity: 1; filter: blur(0); }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  .tg-unlocked-label {
+    color: #7CFC00;
+    font-size: 13px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: bold;
+    text-shadow: 0 0 15px rgba(124, 252, 0, 0.7);
+    animation: pulseGreen 2s ease-in-out infinite;
+  }
+  @keyframes pulseGreen {
+    0%, 100% { opacity: 0.8; }
+    50%      { opacity: 1; }
+  }
   .tg-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 12px;
+    gap: 10px;
     text-decoration: none;
-    padding: 18px 34px;
-    border-radius: 14px;
+    padding: 14px 26px;
+    border-radius: 12px;
     background: linear-gradient(135deg, #2AABEE, #229ED9);
     color: #fff;
     font-family: 'Georgia', serif;
-    font-size: 17px;
+    font-size: 14px;
     font-weight: bold;
-    letter-spacing: 2px;
-    box-shadow:
-      0 0 35px rgba(42, 171, 238, 0.5),
-      0 10px 30px rgba(0, 0, 0, 0.4);
+    letter-spacing: 1.5px;
+    box-shadow: 0 0 30px rgba(42, 171, 238, 0.5), 0 8px 25px rgba(0, 0, 0, 0.4);
     transition: all 0.3s ease;
     animation: tgPulse 2.5s ease-in-out infinite;
     position: relative;
     overflow: hidden;
   }
-
   .tg-button::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
     background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
     animation: shine 3s infinite;
   }
-
-  @keyframes shine {
-    0% { left: -100%; }
-    50% { left: 100%; }
-    100% { left: 100%; }
-  }
-
+  @keyframes shine { 0% { left: -100%; } 50% { left: 100%; } 100% { left: 100%; } }
   @keyframes tgPulse {
-    0%, 100% { box-shadow: 0 0 35px rgba(42, 171, 238, 0.5), 0 10px 30px rgba(0,0,0,0.4); }
-    50%      { box-shadow: 0 0 60px rgba(42, 171, 238, 0.9), 0 10px 30px rgba(0,0,0,0.4); }
+    0%, 100% { box-shadow: 0 0 30px rgba(42, 171, 238, 0.5), 0 8px 25px rgba(0,0,0,0.4); }
+    50%      { box-shadow: 0 0 55px rgba(42, 171, 238, 0.9), 0 8px 25px rgba(0,0,0,0.4); }
   }
-
   .tg-button:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow:
-      0 0 70px rgba(42, 171, 238, 1),
-      0 15px 40px rgba(0, 0, 0, 0.5);
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 0 60px rgba(42, 171, 238, 1), 0 12px 35px rgba(0, 0, 0, 0.5);
   }
-
-  .tg-button:active { transform: translateY(0) scale(1); }
-
-  .tg-button svg {
-    width: 26px;
-    height: 26px;
-    flex-shrink: 0;
-  }
-
+  .tg-button svg { width: 22px; height: 22px; flex-shrink: 0; }
   .tg-arrow {
     display: inline-block;
     animation: bounceDown 1.5s ease-in-out infinite;
-    font-size: 22px;
+    font-size: 18px;
     color: #2AABEE;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
   }
-
   @keyframes bounceDown {
     0%, 100% { transform: translateY(0); }
-    50%      { transform: translateY(8px); }
+    50%      { transform: translateY(6px); }
   }
-
-  .heart-particle {
-    position: fixed;
-    pointer-events: none;
-    z-index: 5;
-    will-change: transform, opacity;
+  .heart-particle { position: fixed; pointer-events: none; z-index: 5; will-change: transform, opacity; }
+  .restart-btn {
+    margin-top: 20px;
+    padding: 8px 16px;
+    background: transparent;
+    border: none;
+    color: rgba(244, 228, 188, 0.35);
+    font-family: 'Georgia', serif;
+    font-size: 12px;
+    font-style: italic;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
-
+  .restart-btn:hover { color: rgba(244, 228, 188, 0.8); }
   @media (max-width: 540px) {
-    .container { padding: 38px 22px 30px; }
-    h1 { font-size: 20px; }
-    .riddle { font-size: 15px; padding: 18px 20px; line-height: 1.8; }
-    .phone-option { font-size: 15px; padding: 16px 14px; letter-spacing: 1px; }
-    .final .name { font-size: 42px; letter-spacing: 5px; }
-    .final .message { font-size: 15.5px; }
-    .final .message.big { font-size: 19px; }
-    .tg-button { font-size: 14px; padding: 15px 22px; letter-spacing: 1px; }
-    .tg-button svg { width: 22px; height: 22px; }
+    .container { padding: 22px 20px 20px; }
+    h1 { font-size: 17px; margin-bottom: 12px; }
+    .riddle { font-size: 13.5px; padding: 14px 16px; line-height: 1.6; }
+    .final .name { font-size: 34px; letter-spacing: 4px; }
+    .final .message { font-size: 13px; }
+    .final .message.big { font-size: 16px; }
+    .phone-option { font-size: 13.5px; padding: 12px 12px; }
+    .tg-button { font-size: 12.5px; padding: 12px 18px; }
+    .tg-button svg { width: 18px; height: 18px; }
+    .intro-title { font-size: 24px; }
+    .intro-heart { font-size: 60px; }
+    .intro-subtitle { font-size: 14px; margin-bottom: 34px; }
+    .intro-btn { font-size: 14px; padding: 15px 34px; letter-spacing: 4px; }
+    .tg-count-item { min-width: 46px; padding: 7px 5px 6px; }
+    .tg-count-num { font-size: 18px; }
+    .tg-count-label { font-size: 8px; }
+    .tg-locked { padding: 18px 16px; }
+  }
+  @media (max-height: 700px) {
+    .container { padding: 20px 24px 20px; }
+    h1 { font-size: 17px; margin-bottom: 12px; }
+    .riddle { font-size: 13.5px; padding: 14px 18px; line-height: 1.55; margin-bottom: 12px; }
+    .riddle p { margin-bottom: 4px; }
+    .riddle p:last-child { margin-top: 8px; font-size: 14px; }
+    input { padding: 10px 14px; font-size: 14px; }
+    button.check { padding: 11px; font-size: 12px; }
+    .ornament { font-size: 12px; margin-bottom: 6px; }
+    .stage-title { font-size: 11px; }
+    .progress { margin-bottom: 12px; }
+    .phone-option { padding: 12px 14px; font-size: 14px; }
+    .final .name { font-size: 36px; }
+    .final .heart-icon { font-size: 38px; }
+    .tg-locked { padding: 14px 16px; gap: 10px; }
+    .tg-lock-icon { font-size: 32px; }
+    .intro-heart { font-size: 60px; margin-bottom: 14px; }
+    .intro-title { font-size: 24px; margin-bottom: 10px; }
+    .intro-subtitle { font-size: 14px; margin-bottom: 30px; }
+    .intro-btn { padding: 14px 34px; font-size: 14px; }
+    .intro-ornament { margin-bottom: 16px; }
+  }
+  @media (max-height: 600px) {
+    .riddle { font-size: 12.5px; line-height: 1.5; padding: 12px 14px; }
+    .riddle p { margin-bottom: 3px; }
+    .ornament { display: none; }
+    h1 { font-size: 16px; margin-bottom: 10px; }
+    .intro-heart { font-size: 48px; margin-bottom: 10px; }
+    .intro-title { font-size: 20px; }
+    .intro-subtitle { margin-bottom: 22px; }
+    .intro-footer { display: none; }
   }
 </style>
 </head>
 <body>
 
-<div class="container">
+<div class="intro" id="intro">
+  <div class="intro-heart">💛</div>
+  <div class="intro-ornament">✦ ✦ ✦</div>
+  <h1 class="intro-title">Алина,<br>это послание — <b>для тебя</b></h1>
+  <p class="intro-subtitle">
+    Я спрятал для тебя подарок.<br>
+    Но чтобы найти его — нужно пройти путь из трёх загадок.
+  </p>
+  <button class="intro-btn" id="startBtn">Начать</button>
+  <div class="intro-footer">Сделано с любовью • для тебя 💛</div>
+</div>
+
+<div class="container" id="mainContainer" style="display:none;">
 
   <div class="progress" id="progress"></div>
 
-  <!-- ЭТАП 1 -->
   <div class="stage active" id="stage1">
     <div class="ornament">✦ ✦ ✦</div>
     <div class="stage-title">Этап 1 из 3</div>
-    <h1>Загадка первая:<br>что я прячу?</h1>
-
+    <h1>Загадка первая: что я прячу?</h1>
     <div class="riddle">
       <p>Я живу в твоём кармане и в твоей руке,</p>
       <p>просыпаюсь от касания — и мир в ответ.</p>
       <p>Во мне — твои фото, песни, переписки,</p>
       <p>во мне — вся связь с теми, кто далеко.</p>
-
       <p>Я — стеклянный, но храню твоё тепло,</p>
       <p>я — то, без чего ты не выйдешь из дома.</p>
-
       <p>Кто я?</p>
     </div>
-
     <input type="text" id="ans1" placeholder="Твой ответ..." autocomplete="off" spellcheck="false">
-    <button data-stage="1">Проверить</button>
+    <button class="check" data-stage="1">Проверить</button>
     <div class="error" id="err1"></div>
     <div class="hint-box" id="hint1"></div>
   </div>
 
-  <!-- ЭТАП 2 -->
   <div class="stage" id="stage2">
     <div class="ornament">✦ ✦ ✦</div>
     <div class="stage-title">Этап 2 из 3</div>
-    <h1>А теперь — где я его взял?</h1>
-
+    <h1>А теперь — тайна вторая</h1>
     <div class="riddle">
       <p>Он не магазин, но в нём их миллион.</p>
       <p>Он не почта, но посылки шлёт вагон.</p>
       <p>Синяя коробка, синий кнопка, синий цвет —</p>
       <p>там нашёл я твой будущий сюрприз, привет.</p>
-
       <p>Пункт выдачи — как лес густой,</p>
       <p>там пакеты ждут своей судьбой.</p>
       <p>Скажи мне имя — и узнаешь вмиг,</p>
       <p>где для тебя я чудо сотворил.</p>
-
-      <p>Где я его купил?</p>
+      <p>Как зовут того, кто помог мне в этом?</p>
     </div>
-
     <input type="text" id="ans2" placeholder="Название магазина..." autocomplete="off" spellcheck="false">
-    <button data-stage="2">Проверить</button>
+    <button class="check" data-stage="2">Проверить</button>
     <div class="error" id="err2"></div>
     <div class="hint-box" id="hint2"></div>
   </div>
 
-  <!-- ЭТАП 3 -->
   <div class="stage" id="stage3">
     <div class="ornament">✦ ✦ ✦</div>
     <div class="stage-title">Этап 3 из 3</div>
     <h1>Выбери модель телефона</h1>
-
     <div class="riddle">
       <p>Он родом из Кореи, гордый и прямой.</p>
       <p>Название его — как имя, как покой.</p>
       <p>Оно звучит как по-английски «я — твой друг»,</p>
       <p>что «три звезды» хранит в себе вокруг.</p>
-
       <p>Вторая буква в имени — как начало, как старт,</p>
       <p>что первый сорт, что «А» — как высший балл.</p>
       <p>А цифра в нём — как дважды трижды шесть,</p>
       <p>и вместе — то, о чём ты скажешь: «Есть!»</p>
-
       <p>Какой телефон я выбрал для тебя?</p>
     </div>
-
     <div class="phone-options-title">выбери один вариант</div>
-
     <div class="phone-options">
       <button class="phone-option" data-phone="xiaomi" data-correct="false">Xiaomi Redmi Note 14</button>
       <button class="phone-option" data-phone="samsung" data-correct="true">Samsung Galaxy A36</button>
       <button class="phone-option" data-phone="honor" data-correct="false">Honor X9c</button>
     </div>
-
     <div class="error" id="err3"></div>
     <div class="hint-box" id="hint3"></div>
   </div>
 
-  <!-- ФИНАЛ -->
   <div class="final" id="final">
     <span class="heart-icon">❤️</span>
     <p class="small-head">ты разгадала всё</p>
-
     <div class="name" id="nameReveal"></div>
-
     <p class="message" id="msg1">Ты прошла весь путь — от первой строчки до последней.</p>
     <p class="message" id="msg2">И знаешь, что я понял за это время?</p>
-
     <p class="message big" id="msg3">Я очень сильно тебя люблю.</p>
-
     <p class="message" id="msg4">Сильнее, чем можно уместить в слова, в подарки, в этот сайт. Ты — лучшее, что случилось со мной. Каждый день рядом с тобой — это подарок, который я не заслужил, но берегу как самое дорогое.</p>
-
     <div class="divider" id="div1">✦ ✦ ✦</div>
 
     <div class="tg-block" id="tgBlock">
-      <div class="tg-arrow">⬇</div>
-      <p class="tg-label">А самое главное — я оставил для тебя здесь 💛</p>
-      <a href="https://t.me/+xafnSoaXuuVhNWIy" target="_blank" rel="noopener" class="tg-button">
-        <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.9-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.259-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.013-.15-.056-.212-.069-.062-.175-.041-.25-.024-.106.024-1.793 1.14-5.061 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.997-3.014 3.332-1.386 4.025-1.627 4.476-1.635.099-.002.321.023.465.14.121.098.155.23.152.325-.003.067-.04.334-.06.454z"/>
-        </svg>
-        ПЕРЕЙТИ В КАНАЛ
-      </a>
+      <div class="tg-locked" id="tgLocked">
+        <div class="tg-lock-icon">🔒</div>
+        <div class="tg-locked-title">Посылка ещё в пути</div>
+        <div class="tg-locked-text">Кнопка разблокируется, когда подарок прибудет на пункт выдачи.</div>
+        <div class="tg-countdown" id="countdown">
+          <div class="tg-count-item"><div class="tg-count-num" id="cdDays">00</div><div class="tg-count-label">дней</div></div>
+          <div class="tg-count-sep">:</div>
+          <div class="tg-count-item"><div class="tg-count-num" id="cdHours">00</div><div class="tg-count-label">часов</div></div>
+          <div class="tg-count-sep">:</div>
+          <div class="tg-count-item"><div class="tg-count-num" id="cdMins">00</div><div class="tg-count-label">минут</div></div>
+          <div class="tg-count-sep">:</div>
+          <div class="tg-count-item"><div class="tg-count-num" id="cdSecs">00</div><div class="tg-count-label">секунд</div></div>
+        </div>
+        <div class="tg-track-info">
+          Трек-номер: <b id="trackNum">——</b><br>
+          Ожидаемое прибытие — <b id="arrivalTime">——</b>
+        </div>
+        <button class="tg-check-btn" id="checkBtn">Проверить снова</button>
+      </div>
+
+      <div class="tg-unlocked" id="tgUnlocked" style="display:none;">
+        <div class="tg-unlocked-label">✓ Посылка прибыла!</div>
+        <div class="tg-arrow">⬇</div>
+        <p class="tg-label">Твой подарок ждёт — забери его здесь 💛</p>
+        <a href="https://t.me/+xafnSoaXuuVhNWIy" target="_blank" rel="noopener" class="tg-button">
+          <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.9-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.259-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.013-.15-.056-.212-.069-.062-.175-.041-.25-.024-.106.024-1.793 1.14-5.061 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.997-3.014 3.332-1.386 4.025-1.627 4.476-1.635.099-.002.321.023.465.14.121.098.155.23.152.325-.003.067-.04.334-.06.454z"/>
+          </svg>
+          ПЕРЕЙТИ В КАНАЛ
+        </a>
+      </div>
     </div>
 
     <div class="divider" id="div2">✦ ✦ ✦</div>
-
-    <p class="signature" id="signature">
-      С любовью, твой
-      <b>АНДРЕЙ</b>
-    </p>
+    <p class="signature" id="signature">С любовью, твой<b>АНДРЕЙ</b></p>
+    <button class="restart-btn" id="restartBtn">↻ пройти заново</button>
   </div>
 
 </div>
 
 <script>
+  /* ============================================================
+      ГЛАВНАЯ НАСТРОЙКА
+     ============================================================ */
+
+  const BLOB_ID = '01a0febe-ca02-74f0-bfd8-288a245d27ea';
+
+  const UNLOCK_CONFIG = {
+    unlockDate: '2026-10-11T18:00:00',
+    trackingNumber: '0117738829-0066-1',
+    showTracking: true,
+    pollInterval: 30000
+  };
+
   const CORRECT_ANSWERS = {
     1: ["телефон", "смартфон", "мобильник", "мобильный", "телефончик", "iphone", "айфон", "сотовый", "phone"],
     2: ["озон", "ozon", "оzon"]
@@ -715,9 +852,34 @@
 
   let currentStage = 1;
   let wrongCounters = { 1: 0, 2: 0, 3: 0 };
+  let countdownInterval = null;
+  let pollInterval = null;
+  let isUnlockedNow = false;
 
   const progressEl = document.getElementById('progress');
   const container = document.querySelector('.container');
+  const introEl = document.getElementById('intro');
+  const startBtn = document.getElementById('startBtn');
+
+  startBtn.addEventListener('click', () => {
+    introEl.classList.add('hide');
+    setTimeout(() => {
+      introEl.style.display = 'none';
+      container.style.display = 'block';
+      let alreadyDone = false;
+      try { alreadyDone = localStorage.getItem('alinaQuestComplete') === '1'; } catch(e) {}
+      if (alreadyDone) {
+        document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+        showFinal();
+      } else {
+        setTimeout(() => {
+          const ans1 = document.getElementById('ans1');
+          if (ans1) ans1.focus();
+        }, 100);
+      }
+      miniBurst(30);
+    }, 900);
+  });
 
   function buildProgress() {
     progressEl.innerHTML = '';
@@ -731,10 +893,7 @@
   }
 
   function normalize(str) {
-    return str.toLowerCase().trim()
-      .replace(/ё/g, 'е')
-      .replace(/[.,!?;:]/g, '')
-      .replace(/\s+/g, ' ');
+    return str.toLowerCase().trim().replace(/ё/g, 'е').replace(/[.,!?;:]/g, '').replace(/\s+/g, ' ');
   }
 
   function showHint(stage) {
@@ -752,8 +911,9 @@
     document.getElementById('stage' + fromStage).classList.remove('active');
     currentStage++;
     buildProgress();
-
+    container.scrollTop = 0;
     if (currentStage > totalStages) {
+      try { localStorage.setItem('alinaQuestComplete', '1'); } catch(e) {}
       showFinal();
     } else {
       document.getElementById('stage' + currentStage).classList.add('active');
@@ -766,20 +926,13 @@
     const inputEl = document.getElementById('ans' + stage);
     const errEl = document.getElementById('err' + stage);
     const userAns = normalize(inputEl.value);
-
-    if (!userAns) {
-      errEl.textContent = 'Напиши свой ответ, любимая 💭';
-      return;
-    }
-
+    if (!userAns) { errEl.textContent = 'Напиши свой ответ, любимая 💭'; return; }
     const correct = CORRECT_ANSWERS[stage].map(normalize);
-
     if (correct.includes(userAns)) {
       inputEl.style.borderColor = '#7CFC00';
-      inputEl.style.boxShadow = '0 0 30px rgba(124, 252, 0, 0.6)';
+      inputEl.style.boxShadow = '0 0 25px rgba(124, 252, 0, 0.6)';
       errEl.textContent = '✓ Верно!';
       errEl.style.color = '#7CFC00';
-
       miniBurst(20);
       setTimeout(() => goToNextStage(stage), 700);
     } else {
@@ -796,21 +949,17 @@
   function checkPhone(btn) {
     const errEl = document.getElementById('err3');
     const isCorrect = btn.dataset.correct === 'true';
-
     if (isCorrect) {
       btn.classList.add('correct');
       errEl.textContent = '✓ Верно! Это Samsung Galaxy A36';
       errEl.style.color = '#7CFC00';
-
       document.querySelectorAll('.phone-option').forEach(b => b.disabled = true);
-
       miniBurst(30);
       setTimeout(() => goToNextStage(3), 1200);
     } else {
       btn.classList.add('wrong');
       btn.disabled = true;
       wrongCounters[3]++;
-
       errEl.textContent = 'Не этот... Попробуй другой 💛';
       errEl.style.color = '';
       container.classList.add('shake');
@@ -819,26 +968,113 @@
     }
   }
 
-  document.querySelectorAll('button[data-stage]').forEach(btn => {
+  document.querySelectorAll('button.check').forEach(btn => {
     const stage = parseInt(btn.dataset.stage);
     btn.addEventListener('click', () => checkStage(stage));
     const input = document.getElementById('ans' + stage);
-    input.addEventListener('keydown', e => {
-      if (e.key === 'Enter') checkStage(stage);
-    });
+    input.addEventListener('keydown', e => { if (e.key === 'Enter') checkStage(stage); });
   });
 
   document.querySelectorAll('.phone-option').forEach(btn => {
-    btn.addEventListener('click', () => {
-      if (btn.disabled) return;
-      checkPhone(btn);
-    });
+    btn.addEventListener('click', () => { if (btn.disabled) return; checkPhone(btn); });
+  });
+
+  function formatTwo(n) { return String(n).padStart(2, '0'); }
+
+  function formatDateHuman(d) {
+    const months = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн', 'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+    return `${d.getDate()} ${months[d.getMonth()]}, ${formatTwo(d.getHours())}:${formatTwo(d.getMinutes())}`;
+  }
+
+  async function checkRemoteFlag() {
+    if (!BLOB_ID) return false;
+    try {
+      const resp = await fetch('https://jsonblob.com/api/jsonBlob/' + BLOB_ID, {
+        headers: { 'Accept': 'application/json' }
+      });
+      if (!resp.ok) return false;
+      const data = await resp.json();
+      return data && data.unlocked === true;
+    } catch (e) { return false; }
+  }
+
+  function updateCountdown() {
+    const unlockTime = new Date(UNLOCK_CONFIG.unlockDate).getTime();
+    const now = Date.now();
+    const diff = unlockTime - now;
+    if (diff <= 0) { unlockTelegram(); return; }
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const mins = Math.floor((diff / (1000 * 60)) % 60);
+    const secs = Math.floor((diff / 1000) % 60);
+    document.getElementById('cdDays').textContent = formatTwo(days);
+    document.getElementById('cdHours').textContent = formatTwo(hours);
+    document.getElementById('cdMins').textContent = formatTwo(mins);
+    document.getElementById('cdSecs').textContent = formatTwo(secs);
+  }
+
+  function unlockTelegram() {
+    if (isUnlockedNow) return;
+    isUnlockedNow = true;
+    if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+    if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+    const lockedEl = document.getElementById('tgLocked');
+    const unlockedEl = document.getElementById('tgUnlocked');
+    if (lockedEl) lockedEl.style.display = 'none';
+    if (unlockedEl) unlockedEl.style.display = 'inline-flex';
+    setTimeout(() => epicBurst(80), 300);
+    setTimeout(() => epicBurst(60), 900);
+    spawnHeart(true); spawnHeart(true); spawnHeart(true);
+  }
+
+  async function initUnlockSystem() {
+    const lockedEl = document.getElementById('tgLocked');
+    const unlockedEl = document.getElementById('tgUnlocked');
+    if (UNLOCK_CONFIG.showTracking) {
+      const trackEl = document.getElementById('trackNum');
+      if (trackEl) trackEl.textContent = UNLOCK_CONFIG.trackingNumber;
+      const arrivalEl = document.getElementById('arrivalTime');
+      if (arrivalEl) {
+        const d = new Date(UNLOCK_CONFIG.unlockDate);
+        arrivalEl.textContent = formatDateHuman(d);
+      }
+    } else {
+      const infoEl = document.querySelector('.tg-track-info');
+      if (infoEl) infoEl.style.display = 'none';
+    }
+    const remote = await checkRemoteFlag();
+    if (remote) { unlockTelegram(); return; }
+    const unlockTime = new Date(UNLOCK_CONFIG.unlockDate).getTime();
+    if (Date.now() >= unlockTime) { unlockTelegram(); return; }
+    if (lockedEl) lockedEl.style.display = 'inline-flex';
+    if (unlockedEl) unlockedEl.style.display = 'none';
+    updateCountdown();
+    countdownInterval = setInterval(updateCountdown, 1000);
+    if (BLOB_ID) {
+      pollInterval = setInterval(async () => {
+        const r = await checkRemoteFlag();
+        if (r) unlockTelegram();
+      }, UNLOCK_CONFIG.pollInterval);
+    }
+  }
+
+  document.getElementById('checkBtn').addEventListener('click', async () => {
+    const btn = document.getElementById('checkBtn');
+    btn.textContent = 'Проверяем...';
+    btn.disabled = true;
+    const remote = await checkRemoteFlag();
+    if (remote) { unlockTelegram(); return; }
+    const unlockTime = new Date(UNLOCK_CONFIG.unlockDate).getTime();
+    if (Date.now() >= unlockTime) { unlockTelegram(); return; }
+    updateCountdown();
+    btn.textContent = 'Ещё не пришла...';
+    setTimeout(() => { btn.textContent = 'Проверить снова'; btn.disabled = false; }, 1200);
   });
 
   function showFinal() {
     progressEl.innerHTML = '';
     document.getElementById('final').classList.add('show');
-
+    container.scrollTop = 0;
     const nameEl = document.getElementById('nameReveal');
     nameEl.innerHTML = '';
     [...GIRL_NAME].forEach((ch, i) => {
@@ -847,25 +1083,54 @@
       s.style.animationDelay = (0.4 + i * 0.15) + 's';
       nameEl.appendChild(s);
     });
-
-    const delays = {
-      msg1: 1.8, msg2: 2.6, msg3: 3.6, msg4: 4.8,
-      div1: 5.8, tgBlock: 6.4, div2: 7.4, signature: 8.0
-    };
+    const delays = { msg1: 1.8, msg2: 2.6, msg3: 3.6, msg4: 4.8, div1: 5.8, tgBlock: 6.4, div2: 7.4, signature: 8.0 };
     Object.entries(delays).forEach(([id, d]) => {
       const el = document.getElementById(id);
       if (el) el.style.animationDelay = d + 's';
     });
-
     setTimeout(() => startHeartRain(), 1000);
     setTimeout(() => epicBurst(150), 3800);
     setTimeout(() => epicBurst(120), 4500);
     setTimeout(() => epicBurst(100), 5500);
-
-    setInterval(() => {
-      if (!document.hidden) spawnHeart();
-    }, 350);
+    setTimeout(initUnlockSystem, 6600);
+    if (window._heartInterval) clearInterval(window._heartInterval);
+    window._heartInterval = setInterval(() => { if (!document.hidden) spawnHeart(); }, 350);
   }
+
+  document.getElementById('restartBtn').addEventListener('click', () => {
+    try { localStorage.removeItem('alinaQuestComplete'); } catch(e) {}
+    currentStage = 1;
+    wrongCounters = { 1: 0, 2: 0, 3: 0 };
+    isUnlockedNow = false;
+    if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+    if (pollInterval) { clearInterval(pollInterval); pollInterval = null; }
+    document.getElementById('ans1').value = '';
+    document.getElementById('ans1').style.borderColor = '';
+    document.getElementById('ans1').style.boxShadow = '';
+    document.getElementById('err1').textContent = '';
+    document.getElementById('hint1').classList.remove('show');
+    document.getElementById('hint1').innerHTML = '';
+    document.getElementById('ans2').value = '';
+    document.getElementById('ans2').style.borderColor = '';
+    document.getElementById('ans2').style.boxShadow = '';
+    document.getElementById('err2').textContent = '';
+    document.getElementById('hint2').classList.remove('show');
+    document.getElementById('hint2').innerHTML = '';
+    document.getElementById('err3').textContent = '';
+    document.getElementById('hint3').classList.remove('show');
+    document.getElementById('hint3').innerHTML = '';
+    document.querySelectorAll('.phone-option').forEach(b => { b.classList.remove('correct', 'wrong'); b.disabled = false; });
+    document.getElementById('tgLocked').style.display = 'inline-flex';
+    document.getElementById('tgUnlocked').style.display = 'none';
+    document.getElementById('checkBtn').textContent = 'Проверить снова';
+    document.getElementById('checkBtn').disabled = false;
+    document.getElementById('final').classList.remove('show');
+    document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+    document.getElementById('stage1').classList.add('active');
+    buildProgress();
+    container.scrollTop = 0;
+    setTimeout(() => document.getElementById('ans1').focus(), 100);
+  });
 
   function spawnHeart(initial = false) {
     const h = document.createElement('div');
@@ -877,33 +1142,24 @@
     h.style.fontSize = (14 + Math.random() * 24) + 'px';
     h.style.opacity = 0.85;
     document.body.appendChild(h);
-
     const duration = 5000 + Math.random() * 5000;
     const drift = (Math.random() - 0.5) * 200;
-
     h.animate([
       { transform: `translate(0, 0) rotate(0deg)`, opacity: 0.9 },
       { transform: `translate(${drift}px, ${window.innerHeight + 100}px) rotate(${(Math.random()-0.5)*720}deg)`, opacity: 0.2 }
-    ], {
-      duration: duration,
-      easing: 'linear',
-      fill: 'forwards'
-    });
-
+    ], { duration: duration, easing: 'linear', fill: 'forwards' });
     setTimeout(() => h.remove(), duration);
   }
 
   function startHeartRain() {
-    for (let i = 0; i < 25; i++) {
-      setTimeout(() => spawnHeart(true), i * 120);
-    }
+    for (let i = 0; i < 25; i++) setTimeout(() => spawnHeart(true), i * 120);
   }
 
   function miniBurst(count) {
-    const rect = container.getBoundingClientRect();
+    const target = container.style.display === 'none' ? introEl : container;
+    const rect = target.getBoundingClientRect();
     const cx = rect.left + rect.width / 2;
     const cy = rect.top + rect.height / 2;
-
     for (let i = 0; i < count; i++) {
       const p = document.createElement('div');
       p.className = 'star';
@@ -914,21 +1170,14 @@
       p.style.top = cy + 'px';
       p.style.background = Math.random() > 0.5 ? '#ffd97d' : '#fff';
       p.style.boxShadow = '0 0 8px currentColor';
-
       const angle = Math.random() * Math.PI * 2;
       const dist = 60 + Math.random() * 180;
       const dx = Math.cos(angle) * dist;
       const dy = Math.sin(angle) * dist;
-
       p.animate([
         { transform: 'translate(-50%, -50%) scale(0.5)', opacity: 1 },
         { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0)`, opacity: 0 }
-      ], {
-        duration: 900,
-        easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)',
-        fill: 'forwards'
-      });
-
+      ], { duration: 900, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)', fill: 'forwards' });
       document.body.appendChild(p);
       setTimeout(() => p.remove(), 1000);
     }
@@ -937,14 +1186,12 @@
   function epicBurst(count) {
     const cx = window.innerWidth / 2;
     const cy = window.innerHeight / 2;
-
-    const colors = ['#ffd97d', '#ff69b4', '#fff', '#ffb6c1', '#d4af37', '#ff4d6d'];
-
+    const colors = ['#ffd97d', '#ff69b4', '#fff', '#ffb6c1', '#d4af37', '#ff4d6d', '#7CFC00'];
     for (let i = 0; i < count; i++) {
       const p = document.createElement('div');
       p.className = 'heart-particle';
       const isHeart = Math.random() > 0.4;
-      p.textContent = isHeart ? ['❤️', '💛', '💖', '💕'][Math.floor(Math.random()*4)] : '';
+      p.textContent = isHeart ? ['❤️', '💛', '💖', '💕', '✨'][Math.floor(Math.random()*5)] : '';
       if (!isHeart) {
         p.style.width = (3 + Math.random() * 5) + 'px';
         p.style.height = p.style.width;
@@ -959,23 +1206,16 @@
       p.style.transform = 'translate(-50%, -50%)';
       p.style.opacity = 1;
       document.body.appendChild(p);
-
       const angle = Math.random() * Math.PI * 2;
       const dist = 150 + Math.random() * 500;
       const dx = Math.cos(angle) * dist;
       const dy = Math.sin(angle) * dist;
       const rot = (Math.random() - 0.5) * 1080;
-
       p.animate([
         { transform: 'translate(-50%, -50%) scale(0) rotate(0deg)', opacity: 1 },
         { transform: `translate(calc(-50% + ${dx*0.6}px), calc(-50% + ${dy*0.6}px)) scale(1.4) rotate(${rot*0.6}deg)`, opacity: 1, offset: 0.5 },
         { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.3) rotate(${rot}deg)`, opacity: 0 }
-      ], {
-        duration: 1800 + Math.random() * 1200,
-        easing: 'cubic-bezier(0.15, 0.75, 0.3, 1)',
-        fill: 'forwards'
-      });
-
+      ], { duration: 1800 + Math.random() * 1200, easing: 'cubic-bezier(0.15, 0.75, 0.3, 1)', fill: 'forwards' });
       setTimeout(() => p.remove(), 3200);
     }
   }
@@ -998,7 +1238,23 @@
   setInterval(createBgStar, 350);
 
   buildProgress();
-  setTimeout(() => document.getElementById('ans1').focus(), 300);
+
+  /* ==================== KEEP-ALIVE: продление blob ==================== */
+  (function keepAlive() {
+    if (!BLOB_ID) return;
+    const lastPing = parseInt(localStorage.getItem('blobPing') || '0');
+    const now = Date.now();
+    if (now - lastPing < 12 * 60 * 60 * 1000) return;
+    fetch('https://jsonblob.com/api/jsonBlob/' + BLOB_ID)
+      .then(r => r.json())
+      .then(data => fetch('https://jsonblob.com/api/jsonBlob/' + BLOB_ID, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      }))
+      .then(() => localStorage.setItem('blobPing', String(now)))
+      .catch(() => {});
+  })();
 </script>
 </body>
 </html>
