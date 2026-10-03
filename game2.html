@@ -32,6 +32,7 @@
     50%      { opacity: 0.9;  transform: scale(1.5); }
   }
 
+  /* СТАРТОВЫЙ ЭКРАН */
   .intro-screen {
     position: fixed;
     inset: 0;
@@ -627,6 +628,84 @@
     letter-spacing: 3px;
     text-shadow: 0 0 15px rgba(255, 217, 125, 0.7);
   }
+  .final .divider {
+    color: #d4af37;
+    letter-spacing: 10px;
+    margin: 22px 0;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards;
+  }
+
+  /* Финальная кнопка Telegram */
+  .tg-final {
+    margin: 0 auto 12px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards;
+    max-width: 400px;
+  }
+  .tg-arrow {
+    display: inline-block;
+    animation: bounceDown 1.5s ease-in-out infinite;
+    font-size: 22px;
+    color: #2AABEE;
+    margin-bottom: 10px;
+  }
+  @keyframes bounceDown {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(6px); }
+  }
+  .tg-label {
+    color: rgba(244, 228, 188, 0.75);
+    font-size: 14px;
+    font-style: italic;
+    letter-spacing: 0.5px;
+    margin-bottom: 16px;
+  }
+  .tg-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    text-decoration: none;
+    padding: 16px 30px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #2AABEE, #229ED9);
+    color: #fff;
+    font-family: 'Georgia', serif;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    box-shadow:
+      0 0 30px rgba(42, 171, 238, 0.5),
+      0 8px 25px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s ease;
+    animation: tgPulse 2.5s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+  }
+  .tg-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+    animation: shine 3s infinite;
+  }
+  @keyframes tgPulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(42, 171, 238, 0.5), 0 8px 25px rgba(0,0,0,0.4); }
+    50%      { box-shadow: 0 0 55px rgba(42, 171, 238, 0.9), 0 8px 25px rgba(0,0,0,0.4); }
+  }
+  .tg-btn:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow:
+      0 0 60px rgba(42, 171, 238, 1),
+      0 12px 35px rgba(0, 0, 0, 0.5);
+  }
+  .tg-btn svg {
+    width: 22px;
+    height: 22px;
+    flex-shrink: 0;
+  }
 
   @media (max-width: 480px) {
     h1 { font-size: 20px; }
@@ -646,6 +725,8 @@
     .intro-emojis { font-size: 46px; }
     .intro-sub { font-size: 13.5px; margin-bottom: 32px; }
     .intro-start-btn { font-size: 14px; padding: 15px 40px; letter-spacing: 4px; }
+    .tg-btn { font-size: 12px; padding: 14px 22px; letter-spacing: 1.5px; }
+    .tg-btn svg { width: 20px; height: 20px; }
   }
 </style>
 </head>
@@ -741,6 +822,20 @@
   <p class="final-msg" id="fm2">И знаешь, что я понял?</p>
   <p class="final-msg big" id="fm3">Что с тобой я готов играть всю жизнь.</p>
   <p class="final-msg" id="fm4">Потому что каждый твой ход — уже моя победа. Спасибо, что ты рядом.</p>
+
+  <div class="divider" id="fdiv">✦ ✦ ✦</div>
+
+  <div class="tg-final" id="tgFinal">
+    <div class="tg-arrow">⬇</div>
+    <p class="tg-label">А теперь — самое главное 💛</p>
+    <a href="https://t.me/+7J0tZ9i3v8g5NzQy" target="_blank" rel="noopener" class="tg-btn">
+      <svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.562 8.161c-.18 1.897-.962 6.502-1.359 8.627-.168.9-.5 1.201-.82 1.23-.697.064-1.226-.461-1.9-.903-1.056-.692-1.653-1.123-2.678-1.799-1.185-.781-.417-1.21.259-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.013-.15-.056-.212-.069-.062-.175-.041-.25-.024-.106.024-1.793 1.14-5.061 3.345-.479.329-.913.489-1.302.481-.428-.009-1.252-.242-1.865-.442-.751-.244-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.997-3.014 3.332-1.386 4.025-1.627 4.476-1.635.099-.002.321.023.465.14.121.098.155.23.152.325-.003.067-.04.334-.06.454z"/>
+      </svg>
+      ПЕРЕЙТИ В КАНАЛ
+    </a>
+  </div>
+
   <p class="final-sign" id="fsign">С любовью, твой<b>АНДРЕЙ</b></p>
 </div>
 
@@ -749,7 +844,6 @@
      ⚙️ ГЛАВНАЯ НАСТРОЙКА
      ============================================================ */
 
-  // Видео привязаны к МОЕМУ ходу (YouTube Shorts)
   const MY_VIDEOS = {
     rock: {
       emoji: "🪨",
@@ -771,7 +865,6 @@
     }
   };
 
-  // Фото для пути поцелуев
   const YOUR_PHOTO_URL = "https://drive.google.com/thumbnail?id=105j0FVOAj_W7cSjnO3D23kLBZQFPr-kM&sz=w1000";
   const YOUR_PHOTO_EMOJI = "😎";
 
@@ -781,9 +874,9 @@
   const LOSS_TARGET = 3;
   const KISS_TARGET = 100;
 
-  /* ---------- ШАНСЫ (в сумме 100) ---------- */
-  const WIN_CHANCE  = 2;   // 2% побед
-  const DRAW_CHANCE = 8;   // 8% ничьих (остальное — проигрыш)
+  const WIN_CHANCE  = 2;
+  const DRAW_CHANCE = 8;
+
   /* ============================================================ */
 
   const options = ['rock', 'scissors', 'paper'];
@@ -802,7 +895,7 @@
   const myPickEl = document.getElementById('myPick');
   const resultEl = document.getElementById('resultText');
 
-  // ---------- СТАРТОВЫЙ ЭКРАН ----------
+  // СТАРТОВЫЙ ЭКРАН
   startBtn.addEventListener('click', () => {
     introScreen.classList.add('hide');
     setTimeout(() => {
@@ -819,7 +912,6 @@
     });
   });
 
-  // Определяем желаемый исход (сначала), потом подбираем ход
   function rollOutcome() {
     const r = Math.random() * 100;
     if (r < WIN_CHANCE) return 'win';
@@ -829,9 +921,9 @@
 
   function pickMyMove(userChoice, outcome) {
     if (outcome === 'draw') return userChoice;
-    if (outcome === 'win') return beats[userChoice]; // мой ход проигрывает Алине
+    if (outcome === 'win') return beats[userChoice];
     for (const opt of options) {
-      if (beats[opt] === userChoice) return opt; // мой ход побеждает
+      if (beats[opt] === userChoice) return opt;
     }
     return options[0];
   }
@@ -894,7 +986,6 @@
         if (wins >= WIN_TARGET) {
           showFinalPath();
         } else if (losses >= LOSS_TARGET) {
-          // ⚡ СРАЗУ переход на поцелуи — без видео
           resultEl.textContent = 'Ладно, хватит играть. Иди сюда 💋';
           resultEl.className = 'result draw';
           setTimeout(() => {
@@ -922,7 +1013,6 @@
     document.querySelectorAll('.choice').forEach(b => b.disabled = false);
   }
 
-  // Кнопка «Или просто закидай меня поцелуями» — сразу переход
   document.getElementById('altBtn').addEventListener('click', () => {
     goToKisses();
   });
@@ -933,7 +1023,7 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  // ---------- Поцелуи ----------
+  // Поцелуи
   const photoWrap = document.getElementById('photoWrap');
   const photoImg = document.getElementById('photoImg');
   const kissCountEl = document.getElementById('kissCount');
@@ -1021,7 +1111,7 @@
     }
   }
 
-  // ---------- Модалка видео ----------
+  // Модалка видео
   const modal = document.getElementById('modal');
   const modalClose = document.getElementById('modalClose');
   const nextBtn = document.getElementById('nextBtn');
@@ -1099,7 +1189,7 @@
     soundBtn.style.pointerEvents = 'none';
   });
 
-  // ---------- Финал ----------
+  // Финал
   function showFinalPath() {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const finalEl = document.getElementById('final');
@@ -1115,7 +1205,10 @@
       nameEl.appendChild(s);
     });
 
-    const delays = { fm1: 1.4, fm2: 2.3, fm3: 3.4, fm4: 4.6, fsign: 5.8 };
+    const delays = {
+      fm1: 1.4, fm2: 2.3, fm3: 3.4, fm4: 4.6,
+      fdiv: 5.6, tgFinal: 6.4, fsign: 7.6
+    };
     Object.entries(delays).forEach(([id, d]) => {
       const el = document.getElementById(id);
       if (el) el.style.animationDelay = d + 's';
@@ -1127,7 +1220,7 @@
     setTimeout(() => burst(60), 5200);
   }
 
-  // ---------- Частицы ----------
+  // Частицы
   function burst(count) {
     const cx = window.innerWidth / 2;
     const cy = window.innerHeight / 2;
