@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Камень, ножницы, бумага 💛</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { min-height: 100%; }
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    min-height: 100vh;
+    background: radial-gradient(ellipse at top, #1a0d2e 0%, #0a0416 55%, #030109 100%);
+    color: #f4e4bc;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 20px 16px 40px;
+    position: relative;
+    overflow-x: hidden;
+  }
+  .star {
+    position: fixed;
+    background: #fff;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: twinkle 3s infinite ease-in-out;
+    z-index: 1;
+  }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.15; transform: scale(1); }
+    50%      { opacity: 0.9;  transform: scale(1.5); }
+  }
+
+  .screen {
+    display: none;
+    width: 100%;
+    max-width: 520px;
+    text-align: center;
+    animation: fadeIn 0.8s ease;
+    position: relative;
+    z-index: 10;
+  }
+  .screen.active { display: block; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .ornament {
+    font-size: 14px;
+    color: #d4af37;
+    letter-spacing: 10px;
+    margin-bottom: 10px;
+    opacity: 0.75;
+  }
+  h1 {
+    font-family: 'Georgia', serif;
+    color: #f4e4bc;
+    font-size: 24px;
+    font-weight: normal;
+    letter-spacing: 1px;
+    line-height: 1.35;
+    text-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
+    margin-bottom: 8px;
+  }
+  h1 b {
+    color: #ffd97d;
+    font-weight: bold;
+    text-shadow: 0 0 25px rgba(255, 217, 125, 0.9);
+  }
+  .subtitle {
+    color: rgba(244, 228, 188, 0.6);
+    font-size: 14px;
+    font-style: italic;
+    letter-spacing: 0.5px;
+    line-height: 1.55;
+    margin-bottom: 24px;
+  }
+
+  .score {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-bottom: 26px;
+  }
+  .score-item { text-align: center; }
+  .score-label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: rgba(244, 228, 188, 0.5);
+    margin-bottom: 6px;
+  }
+  .score-value {
+    font-size: 38px;
+    font-weight: bold;
+    color: #ffd97d;
+    text-shadow: 0 0 20px rgba(255, 217, 125, 0.7);
+    line-height: 1;
+    font-family: 'Georgia', serif;
+  }
+  .score-max { font-size: 16px; color: rgba(244, 228, 188, 0.4); }
+
+  .arena {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 20px;
+    min-height: 130px;
+  }
+  .pick {
+    width: 110px;
+    height: 110px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 58px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, rgba(35, 20, 60, 0.9), rgba(15, 7, 28, 0.9));
+    border: 2px solid rgba(212, 175, 55, 0.4);
+    box-shadow: 0 0 30px rgba(212, 175, 55, 0.15);
+    transition: all 0.4s cubic-bezier(0.2, 1.4, 0.4, 1);
+    user-select: none;
+  }
+  .pick.win  { border-color: #7CFC00; box-shadow: 0 0 40px rgba(124, 252, 0, 0.7); transform: scale(1.05); }
+  .pick.lose { border-color: #ff4d6d; box-shadow: 0 0 40px rgba(255, 77, 109, 0.5); opacity: 0.7; }
+  .pick.anim { animation: pickShake 0.5s ease; }
+  @keyframes pickShake {
+    0%, 100% { transform: scale(1); }
+    25%      { transform: scale(0.85); }
+    50%      { transform: scale(1.1); }
+    75%      { transform: scale(0.95); }
+  }
+  .vs {
+    color: rgba(244, 228, 188, 0.5);
+    font-size: 16px;
+    letter-spacing: 3px;
+    font-weight: bold;
+  }
+
+  .result {
+    min-height: 32px;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 1.5px;
+    margin-bottom: 22px;
+    transition: all 0.4s ease;
+    padding: 6px 0;
+  }
+  .result.win  { color: #7CFC00; text-shadow: 0 0 20px rgba(124, 252, 0, 0.8); }
+  .result.lose { color: #ff8a9b; text-shadow: 0 0 20px rgba(255, 77, 109, 0.6); }
+  .result.draw { color: #ffd97d; text-shadow: 0 0 20px rgba(255, 217, 125, 0.6); }
+
+  .choices {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .choice {
+    width: 88px;
+    height: 88px;
+    border-radius: 20px;
+    border: 2px solid rgba(212, 175, 55, 0.45);
+    background: linear-gradient(135deg, rgba(35, 20, 60, 0.9), rgba(15, 7, 28, 0.9));
+    color: #f4e4bc;
+    font-size: 42px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.2, 1.4, 0.4, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.15);
+  }
+  .choice:hover:not(:disabled) {
+    border-color: #d4af37;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(212, 175, 55, 0.06));
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 0 40px rgba(212, 175, 55, 0.5);
+  }
+  .choice:active:not(:disabled) { transform: scale(0.95); }
+  .choice:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .alt-btn {
+    margin-top: 10px;
+    padding: 12px 24px;
+    border: 1px dashed rgba(212, 175, 55, 0.5);
+    border-radius: 12px;
+    background: transparent;
+    color: rgba(244, 228, 188, 0.7);
+    font-family: 'Georgia', serif;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .alt-btn:hover {
+    background: rgba(212, 175, 55, 0.12);
+    color: #ffd97d;
+    border-color: #d4af37;
+  }
+
+  /* Путь поцелуев */
+  .photo-area {
+    position: relative;
+    width: 280px;
+    height: 280px;
+    margin: 0 auto 24px;
+    filter: drop-shadow(0 0 50px rgba(212, 175, 55, 0.35));
+  }
+  .photo-wrap {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  .photo-img {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    background: linear-gradient(135deg, #2a1a4e, #1a0d2e);
+    border: 4px solid #d4af37;
+    box-shadow:
+      0 0 0 8px rgba(212, 175, 55, 0.15),
+      inset 0 0 60px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 150px;
+    line-height: 1;
+  }
+  .photo-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .kiss-particle {
+    position: absolute;
+    pointer-events: none;
+    z-index: 10;
+    will-change: transform, opacity;
+    transform-origin: center;
+  }
+
+  .kiss-counter {
+    font-size: 42px;
+    font-weight: bold;
+    color: #ffd97d;
+    text-shadow: 0 0 25px rgba(255, 217, 125, 0.8);
+    margin-bottom: 24px;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+  }
+  .kiss-counter .kiss-max {
+    font-size: 18px;
+    color: rgba(244, 228, 188, 0.5);
+    margin-left: 4px;
+  }
+
+  .kiss-btn {
+    padding: 18px 50px;
+    border: 2px solid #ff69b4;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.28), rgba(255, 105, 180, 0.08));
+    color: #ffd1dc;
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 30px rgba(255, 105, 180, 0.35), 0 10px 30px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+    animation: kissPulse 2.5s ease-in-out infinite;
+  }
+  .kiss-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 217, 228, 0.5), transparent);
+    animation: shine 3s infinite;
+  }
+  @keyframes shine { 0% { left: -100%; } 50% { left: 100%; } 100% { left: 100%; } }
+  @keyframes kissPulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(255, 105, 180, 0.35), 0 10px 30px rgba(0,0,0,0.5); }
+    50%      { box-shadow: 0 0 60px rgba(255, 105, 180, 0.7), 0 10px 30px rgba(0,0,0,0.5); }
+  }
+  .kiss-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.5), rgba(255, 105, 180, 0.2));
+    transform: translateY(-3px) scale(1.03);
+    color: #fff;
+  }
+  .kiss-btn:active:not(:disabled) { transform: scale(0.97); }
+  .kiss-btn:disabled { opacity: 0.5; cursor: not-allowed; animation: none; }
+
+  /* Модалка видео */
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 2, 12, 0.96);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px;
+    overflow-y: auto;
+    animation: fadeIn 0.4s ease;
+  }
+  .modal.show { display: flex; }
+  .modal-close {
+    align-self: flex-end;
+    background: transparent;
+    border: none;
+    color: rgba(244, 228, 188, 0.6);
+    font-size: 28px;
+    cursor: pointer;
+    padding: 8px 16px;
+    line-height: 1;
+    transition: color 0.3s;
+  }
+  .modal-close:hover { color: #fff; }
+  .modal-content {
+    max-width: 720px;
+    width: 100%;
+    text-align: center;
+    padding-top: 10px;
+    animation: slideUp 0.5s cubic-bezier(0.2, 1.4, 0.4, 1);
+  }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .video-wrap {
+    width: 100%;
+    aspect-ratio: 9/16;
+    max-height: 65vh;
+    background: #000;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 2px solid rgba(212, 175, 55, 0.5);
+    box-shadow: 0 0 60px rgba(212, 175, 55, 0.25);
+    margin: 0 auto 20px;
+    max-width: 400px;
+  }
+  .video-wrap iframe,
+  .video-wrap video {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+    background: #000;
+  }
+  .video-emoji { font-size: 40px; margin-bottom: 8px; }
+  .video-title {
+    color: #ffd97d;
+    font-size: 21px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(255, 217, 125, 0.6);
+  }
+  .video-desc {
+    color: #f4e4bc;
+    font-size: 14.5px;
+    line-height: 1.7;
+    font-style: italic;
+    max-width: 520px;
+    margin: 0 auto 22px;
+    padding: 0 8px;
+  }
+  .modal-btn {
+    padding: 14px 34px;
+    border: 2px solid #d4af37;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.28), rgba(212, 175, 55, 0.08));
+    color: #ffd97d;
+    font-family: 'Georgia', serif;
+    font-size: 13px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.3);
+  }
+  .modal-btn:hover {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.5), rgba(212, 175, 55, 0.2));
+    transform: translateY(-2px);
+    color: #fff;
+    box-shadow: 0 0 45px rgba(212, 175, 55, 0.6);
+  }
+  .modal-btn:active { transform: translateY(0); }
+
+  /* Финальный экран */
+  .final {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    background: radial-gradient(ellipse at top, #1a0d2e 0%, #0a0416 55%, #030109 100%);
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 20px;
+    text-align: center;
+    overflow-y: auto;
+    animation: fadeIn 1s ease;
+  }
+  .final.show { display: flex; }
+  .final-heart {
+    font-size: 80px;
+    margin-bottom: 16px;
+    animation: heartPulseBig 1.6s ease-in-out infinite;
+    filter: drop-shadow(0 0 40px rgba(255, 105, 180, 1));
+    display: inline-block;
+  }
+  @keyframes heartPulseBig {
+    0%, 100% { transform: scale(1); }
+    50%      { transform: scale(1.18); }
+  }
+  .final h2 {
+    color: #ffd97d;
+    font-size: 26px;
+    font-weight: normal;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    text-shadow: 0 0 30px rgba(255, 217, 125, 0.7);
+  }
+  .final-name {
+    font-size: 52px;
+    letter-spacing: 8px;
+    color: #ffd97d;
+    font-weight: bold;
+    margin-bottom: 28px;
+    text-shadow:
+      0 0 30px rgba(255, 217, 125, 1),
+      0 0 70px rgba(212, 175, 55, 0.7),
+      0 0 120px rgba(255, 105, 180, 0.5);
+    padding-left: 8px;
+  }
+  .final-name span {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(-40px) rotate(-20deg) scale(0.5);
+    animation: dropLetter 0.8s cubic-bezier(0.2, 1.4, 0.4, 1) forwards;
+  }
+  @keyframes dropLetter {
+    to { opacity: 1; transform: translateY(0) rotate(0) scale(1); }
+  }
+  .final-msg {
+    color: #f4e4bc;
+    font-size: 16px;
+    line-height: 1.85;
+    font-style: italic;
+    max-width: 520px;
+    margin-bottom: 14px;
+    padding: 0 10px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards;
+  }
+  .final-msg.big {
+    font-size: 22px;
+    font-style: normal;
+    font-weight: bold;
+    color: #ffd97d;
+    letter-spacing: 1.5px;
+    text-shadow: 0 0 20px rgba(255, 217, 125, 0.7);
+    margin: 22px 0;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .final-sign {
+    margin-top: 28px;
+    color: rgba(244, 228, 188, 0.7);
+    font-size: 14px;
+    font-style: italic;
+    letter-spacing: 1px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards;
+  }
+  .final-sign b {
+    display: block;
+    margin-top: 6px;
+    color: #ffd97d;
+    font-size: 20px;
+    letter-spacing: 3px;
+    text-shadow: 0 0 15px rgba(255, 217, 125, 0.7);
+  }
+
+  @media (max-width: 480px) {
+    h1 { font-size: 20px; }
+    .subtitle { font-size: 12.5px; }
+    .pick { width: 90px; height: 90px; font-size: 48px; }
+    .choice { width: 76px; height: 76px; font-size: 36px; }
+    .score-value { font-size: 32px; }
+    .photo-area { width: 240px; height: 240px; }
+    .photo-img { font-size: 120px; }
+    .kiss-counter { font-size: 36px; }
+    .kiss-btn { padding: 15px 34px; font-size: 13px; letter-spacing: 3px; }
+    .final-name { font-size: 40px; letter-spacing: 5px; }
+    .final h2 { font-size: 21px; }
+    .final-msg { font-size: 14.5px; }
+    .final-msg.big { font-size: 18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ЭКРАН 1: RPS -->
+<div class="screen active" id="screen-rps">
+  <div class="ornament">✦ ✦ ✦</div>
+  <h1>Камень, ножницы, <b>бумага</b></h1>
+  <p class="subtitle">Победи меня 3 раза — и я покажу тебе кое-что 💛</p>
+
+  <div class="score">
+    <div class="score-item">
+      <span class="score-label">Победы</span>
+      <span class="score-value" id="winsCount">0</span>
+      <span class="score-max">/ 3</span>
+    </div>
+    <div class="score-item">
+      <span class="score-label">Проигрыши</span>
+      <span class="score-value" id="lossesCount">0</span>
+      <span class="score-max">/ 3</span>
+    </div>
+  </div>
+
+  <div class="arena">
+    <div class="pick" id="yourPick">?</div>
+    <div class="vs">VS</div>
+    <div class="pick" id="myPick">?</div>
+  </div>
+
+  <div class="result" id="resultText">Сделай свой выбор ниже 👇</div>
+
+  <div class="choices">
+    <button class="choice" data-choice="rock">✊</button>
+    <button class="choice" data-choice="scissors">✌️</button>
+    <button class="choice" data-choice="paper">✋</button>
+  </div>
+
+  <button class="alt-btn" id="altBtn">💋 Или просто закидай меня поцелуями</button>
+</div>
+
+<!-- ЭКРАН 2: Поцелуи -->
+<div class="screen" id="screen-kiss">
+  <div class="ornament">✦ ✦ ✦</div>
+  <h1>Путь <b>поцелуев</b> 💋</h1>
+  <p class="subtitle">Забросай меня поцелуями — их нужно 100!</p>
+
+  <div class="photo-area">
+    <div class="photo-wrap" id="photoWrap">
+      <div class="photo-img" id="photoImg"></div>
+    </div>
+  </div>
+
+  <div class="kiss-counter">
+    <span id="kissCount">0</span><span class="kiss-max">/ 100</span>
+  </div>
+
+  <button class="kiss-btn" id="kissBtn">💋 Поцеловать</button>
+</div>
+
+<!-- МОДАЛКА ВИДЕО -->
+<div class="modal" id="modal">
+  <button class="modal-close" id="modalClose">✕</button>
+  <div class="modal-content">
+    <div class="video-emoji" id="videoEmoji">🎬</div>
+    <h2 class="video-title" id="videoTitle">—</h2>
+    <div class="video-wrap" id="videoWrap"></div>
+    <p class="video-desc" id="videoDesc">—</p>
+    <button class="modal-btn" id="nextBtn">Дальше</button>
+  </div>
+</div>
+
+<!-- ФИНАЛ -->
+<div class="final" id="final">
+  <span class="final-heart">❤️</span>
+  <h2>Ты сделала это</h2>
+  <div class="final-name" id="finalName"></div>
+  <p class="final-msg" id="fm1">Ты прошла этот путь — до самого конца.</p>
+  <p class="final-msg" id="fm2">И знаешь, что я понял?</p>
+  <p class="final-msg big" id="fm3">Что с тобой я готов играть всю жизнь.</p>
+  <p class="final-msg" id="fm4">Потому что каждый твой ход — уже моя победа. Спасибо, что ты рядом.</p>
+  <p class="final-sign" id="fsign">С любовью, твой<b>АНДРЕЙ</b></p>
+</div>
+
+<script>
+  /* ============================================================
+     ⚙️ ГЛАВНАЯ НАСТРОЙКА — МЕНЯЙ ЗДЕСЬ
+     ============================================================ */
+
+  // Видео привязаны к МОЕМУ ходу
+  const MY_VIDEOS = {
+    rock: {
+      emoji: "🪨",
+      title: "Камень",
+      desc: "Смотри, что я достаю...",
+      url: "https://drive.google.com/file/d/1_XmHo0bo9IUJTO0lgWs3tRqk8FDCA_XG/view?usp=sharing"
+    },
+    scissors: {
+      emoji: "✂️",
+      title: "Ножницы",
+      desc: "Осторожно, они острые...",
+      url: "https://drive.google.com/file/d/1otTMfsFsyk8Qkl2qe5RASx_BuJTY6V9u/view?usp=sharing"
+    },
+    paper: {
+      emoji: "📄",
+      title: "Бумага",
+      desc: "А вот и бумага. Как наша история — чистая и светлая.",
+      url: "https://drive.google.com/file/d/1vDrkV6FNPFo9Nd8iuSsXO7ti--uA2yyI/view?usp=sharing"
+    }
+  };
+
+  // Твоё фото для пути поцелуев
+  // Оставь пустым "" и будет использован эмодзи ниже
+  const YOUR_PHOTO_URL = "";
+  const YOUR_PHOTO_EMOJI = "😎";
+
+  const GIRL_NAME = "АЛИНА";
+
+  const WIN_TARGET  = 3;
+  const LOSS_TARGET = 3;
+  const KISS_TARGET = 100;
+
+  /* ============================================================
+     ДАЛЬШЕ НИЧЕГО МЕНЯТЬ НЕ НУЖНО
+  ============================================================ */
+
+  const options = ['rock', 'scissors', 'paper'];
+  const beats = { rock: 'scissors', scissors: 'paper', paper: 'rock' };
+  const emoji = { rock: '✊', scissors: '✌️', paper: '✋' };
+
+  let wins = 0;
+  let losses = 0;
+  let busy = false;
+
+  const winsEl = document.getElementById('winsCount');
+  const lossesEl = document.getElementById('lossesCount');
+  const yourPickEl = document.getElementById('yourPick');
+  const myPickEl = document.getElementById('myPick');
+  const resultEl = document.getElementById('resultText');
+
+  document.querySelectorAll('.choice').forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (busy) return;
+      play(btn.dataset.choice);
+    });
+  });
+
+  function play(userChoice) {
+    busy = true;
+    document.querySelectorAll('.choice').forEach(b => b.disabled = true);
+
+    const meChoice = options[Math.floor(Math.random() * options.length)];
+
+    yourPickEl.textContent = '?';
+    myPickEl.textContent = '?';
+    yourPickEl.className = 'pick anim';
+    myPickEl.className = 'pick anim';
+    resultEl.textContent = '...';
+    resultEl.className = 'result';
+
+    setTimeout(() => {
+      yourPickEl.textContent = emoji[userChoice];
+      myPickEl.textContent = emoji[meChoice];
+      yourPickEl.className = 'pick';
+      myPickEl.className = 'pick';
+      resolve(userChoice, meChoice);
+    }, 600);
+  }
+
+  function resolve(userChoice, meChoice) {
+    // Ничья — просто переигровка
+    if (userChoice === meChoice) {
+      resultEl.textContent = 'Ничья! Ещё раз 😏';
+      resultEl.className = 'result draw';
+      setTimeout(() => {
+        resetRound();
+        unlock();
+      }, 1100);
+      return;
+    }
+
+    const userWon = beats[userChoice] === meChoice;
+
+    if (userWon) {
+      wins++;
+      winsEl.textContent = wins;
+      yourPickEl.classList.add('win');
+      myPickEl.classList.add('lose');
+      resultEl.textContent = 'Ты победила! 💛';
+      resultEl.className = 'result win';
+      miniBurst(20, yourPickEl);
+    } else {
+      losses++;
+      lossesEl.textContent = losses;
+      yourPickEl.classList.add('lose');
+      myPickEl.classList.add('win');
+      resultEl.textContent = 'Я победил 😎';
+      resultEl.className = 'result lose';
+    }
+
+    // Показываем видео МОЕГО хода
+    setTimeout(() => {
+      showVideo(MY_VIDEOS[meChoice], () => {
+        // После просмотра — проверяем условия
+        if (wins >= WIN_TARGET) {
+          showFinalPath();
+        } else if (losses >= LOSS_TARGET) {
+          resultEl.textContent = 'Ладно, хватит играть. Иди сюда 💋';
+          resultEl.className = 'result draw';
+          setTimeout(goToKisses, 1400);
+        } else {
+          resetRound();
+          unlock();
+        }
+      });
+    }, 900);
+  }
+
+  function resetRound() {
+    yourPickEl.textContent = '?';
+    myPickEl.textContent = '?';
+    yourPickEl.className = 'pick';
+    myPickEl.className = 'pick';
+    resultEl.textContent = 'Твой ход 👇';
+    resultEl.className = 'result';
+  }
+
+  function unlock() {
+    busy = false;
+    document.querySelectorAll('.choice').forEach(b => b.disabled = false);
+  }
+
+  document.getElementById('altBtn').addEventListener('click', () => {
+    if (confirm('Точно хочешь пропустить игру и сразу перейти к поцелуям? 💋')) {
+      goToKisses();
+    }
+  });
+
+  function goToKisses() {
+    document.getElementById('screen-rps').classList.remove('active');
+    document.getElementById('screen-kiss').classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ---------- Поцелуи ----------
+  const photoWrap = document.getElementById('photoWrap');
+  const photoImg = document.getElementById('photoImg');
+  const kissCountEl = document.getElementById('kissCount');
+  const kissBtn = document.getElementById('kissBtn');
+
+  let kissCount = 0;
+  let kissBusy = false;
+
+  if (YOUR_PHOTO_URL) {
+    photoImg.innerHTML = `<img src="${YOUR_PHOTO_URL}" alt="Я">`;
+  } else {
+    photoImg.textContent = YOUR_PHOTO_EMOJI;
+  }
+
+  const kissEmojis = ['💋', '💋', '💋', '💋', '💕', '💖', '💘'];
+
+  kissBtn.addEventListener('click', () => {
+    if (kissBusy) return;
+    kissBusy = true;
+    kissBtn.disabled = true;
+    addKiss();
+    setTimeout(() => {
+      kissBusy = false;
+      if (kissCount < KISS_TARGET) kissBtn.disabled = false;
+    }, 110);
+  });
+
+  function addKiss() {
+    const size = photoWrap.offsetWidth;
+    if (size === 0) return;
+
+    const kiss = document.createElement('div');
+    kiss.className = 'kiss-particle';
+    kiss.textContent = kissEmojis[Math.floor(Math.random() * kissEmojis.length)];
+    const fontSize = 18 + Math.random() * 16;
+    kiss.style.fontSize = fontSize + 'px';
+
+    const side = Math.floor(Math.random() * 4);
+    const margin = 60;
+    let startX, startY;
+    if (side === 0) { startX = Math.random() * size; startY = -margin; }
+    else if (side === 1) { startX = size + margin; startY = Math.random() * size; }
+    else if (side === 2) { startX = Math.random() * size; startY = size + margin; }
+    else { startX = -margin; startY = Math.random() * size; }
+
+    const centerX = size / 2;
+    const centerY = size / 2;
+    const maxR = size * 0.42;
+    const r = Math.sqrt(Math.random()) * maxR;
+    const a = Math.random() * Math.PI * 2;
+    const targetX = centerX + Math.cos(a) * r;
+    const targetY = centerY + Math.sin(a) * r;
+
+    kiss.style.left = startX + 'px';
+    kiss.style.top = startY + 'px';
+    kiss.style.transform = 'translate(-50%, -50%) scale(0.3)';
+    kiss.style.opacity = '0';
+
+    photoWrap.appendChild(kiss);
+
+    const dx = targetX - startX;
+    const dy = targetY - startY;
+    const rot = (Math.random() - 0.5) * 540;
+
+    kiss.animate([
+      { transform: 'translate(-50%, -50%) scale(0.3) rotate(0)', opacity: 0 },
+      { transform: `translate(calc(-50% + ${dx * 0.7}px), calc(-50% + ${dy * 0.7}px)) scale(1.3) rotate(${rot * 0.6}deg)`, opacity: 1, offset: 0.6 },
+      { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(1) rotate(${rot}deg)`, opacity: 1 }
+    ], {
+      duration: 650,
+      easing: 'cubic-bezier(0.34, 1.4, 0.64, 1)',
+      fill: 'forwards'
+    });
+
+    kissCount++;
+    kissCountEl.textContent = kissCount;
+
+    if (kissCount >= KISS_TARGET) {
+      kissBtn.disabled = true;
+      kissBtn.textContent = 'Ты меня зацеловала 💋';
+      setTimeout(() => {
+        burst(120);
+        setTimeout(showFinalPath, 900);
+      }, 500);
+    }
+  }
+
+  // ---------- Модалка видео ----------
+  const modal = document.getElementById('modal');
+  const modalClose = document.getElementById('modalClose');
+  const nextBtn = document.getElementById('nextBtn');
+  const videoWrap = document.getElementById('videoWrap');
+  const videoTitle = document.getElementById('videoTitle');
+  const videoDesc = document.getElementById('videoDesc');
+  const videoEmoji = document.getElementById('videoEmoji');
+
+  let currentCallback = null;
+
+  function getVideoHTML(url) {
+    if (!url) return '<div style="color:#fff;display:flex;align-items:center;justify-content:center;height:100%;font-size:14px;">Видео не задано</div>';
+    // YouTube
+    let m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+    if (m) return `<iframe src="https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    // Google Drive
+    m = url.match(/drive\.google\.com\/file\/d\/([^\/\?]+)/);
+    if (m) return `<iframe src="https://drive.google.com/file/d/${m[1]}/preview" allow="autoplay" allowfullscreen></iframe>`;
+    // VK
+    if (url.includes('vk.com/video_ext') || url.includes('vkvideo.ru')) return `<iframe src="${url}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+    // MP4
+    if (/\.(mp4|webm|mov|m4v)(\?|$)/i.test(url)) return `<video src="${url}" controls playsinline preload="metadata"></video>`;
+    return `<iframe src="${url}" allowfullscreen></iframe>`;
+  }
+
+  function showVideo(v, callback) {
+    currentCallback = callback || null;
+    videoEmoji.textContent = v.emoji || '🎬';
+    videoTitle.textContent = v.title || '';
+    videoDesc.textContent = v.desc || '';
+    videoWrap.innerHTML = getVideoHTML(v.url);
+    modal.classList.add('show');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeVideo() {
+    modal.classList.remove('show');
+    document.body.style.overflow = '';
+    setTimeout(() => { videoWrap.innerHTML = ''; }, 300);
+    if (currentCallback) {
+      const cb = currentCallback;
+      currentCallback = null;
+      cb();
+    }
+  }
+
+  modalClose.addEventListener('click', closeVideo);
+  nextBtn.addEventListener('click', closeVideo);
+
+  // ---------- Финал ----------
+  function showFinalPath() {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const finalEl = document.getElementById('final');
+    finalEl.classList.add('show');
+    document.body.style.overflow = 'hidden';
+
+    const nameEl = document.getElementById('finalName');
+    nameEl.innerHTML = '';
+    [...GIRL_NAME].forEach((ch, i) => {
+      const s = document.createElement('span');
+      s.textContent = ch;
+      s.style.animationDelay = (0.3 + i * 0.15) + 's';
+      nameEl.appendChild(s);
+    });
+
+    const delays = { fm1: 1.4, fm2: 2.3, fm3: 3.4, fm4: 4.6, fsign: 5.8 };
+    Object.entries(delays).forEach(([id, d]) => {
+      const el = document.getElementById(id);
+      if (el) el.style.animationDelay = d + 's';
+    });
+
+    setTimeout(() => burst(80), 1500);
+    setTimeout(() => burst(100), 2800);
+    setTimeout(() => burst(80), 4000);
+    setTimeout(() => burst(60), 5200);
+  }
+
+  // ---------- Частицы ----------
+  function burst(count) {
+    const cx = window.innerWidth / 2;
+    const cy = window.innerHeight / 2;
+    const emojis = ['❤️', '💛', '💖', '💕', '💋', '✨', '🌸', '⭐'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      p.style.position = 'fixed';
+      p.style.left = cx + 'px';
+      p.style.top = cy + 'px';
+      p.style.fontSize = (12 + Math.random() * 22) + 'px';
+      p.style.pointerEvents = 'none';
+      p.style.zIndex = '3000';
+      p.style.transform = 'translate(-50%, -50%)';
+      document.body.appendChild(p);
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 150 + Math.random() * 400;
+      const dx = Math.cos(angle) * dist;
+      const dy = Math.sin(angle) * dist;
+      const rot = (Math.random() - 0.5) * 720;
+      p.animate([
+        { transform: 'translate(-50%, -50%) scale(0) rotate(0)', opacity: 1 },
+        { transform: `translate(calc(-50% + ${dx*0.6}px), calc(-50% + ${dy*0.6}px)) scale(1.3) rotate(${rot*0.6}deg)`, opacity: 1, offset: 0.5 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0.3) rotate(${rot}deg)`, opacity: 0 }
+      ], { duration: 1600 + Math.random() * 1000, easing: 'cubic-bezier(0.15, 0.75, 0.3, 1)', fill: 'forwards' });
+      setTimeout(() => p.remove(), 2800);
+    }
+  }
+
+  function miniBurst(count, targetEl) {
+    const rect = targetEl.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const emojis = ['✨', '⭐', '💛', '🌟'];
+    for (let i = 0; i < count; i++) {
+      const p = document.createElement('div');
+      p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      p.style.position = 'fixed';
+      p.style.left = cx + 'px';
+      p.style.top = cy + 'px';
+      p.style.fontSize = (10 + Math.random() * 12) + 'px';
+      p.style.pointerEvents = 'none';
+      p.style.zIndex = '1500';
+      document.body.appendChild(p);
+      const angle = Math.random() * Math.PI * 2;
+      const dist = 40 + Math.random() * 120;
+      const dx = Math.cos(angle) * dist;
+      const dy = Math.sin(angle) * dist;
+      p.animate([
+        { transform: 'translate(-50%, -50%) scale(0)', opacity: 1 },
+        { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(1)`, opacity: 0 }
+      ], { duration: 800, easing: 'cubic-bezier(0.2, 0.8, 0.3, 1)', fill: 'forwards' });
+      setTimeout(() => p.remove(), 900);
+    }
+  }
+
+  function createBgStar() {
+    const s = document.createElement('div');
+    s.className = 'star';
+    const size = 1 + Math.random() * 2.5;
+    s.style.width = size + 'px';
+    s.style.height = size + 'px';
+    s.style.left = Math.random() * 100 + 'vw';
+    s.style.top = Math.random() * 100 + 'vh';
+    s.style.animationDelay = Math.random() * 3 + 's';
+    s.style.animationDuration = (2 + Math.random() * 4) + 's';
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 7000);
+  }
+  for (let i = 0; i < 40; i++) setTimeout(createBgStar, i * 60);
+  setInterval(createBgStar, 400);
+</script>
+</body>
+</html>
