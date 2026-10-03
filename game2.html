@@ -32,6 +32,117 @@
     50%      { opacity: 0.9;  transform: scale(1.5); }
   }
 
+  .intro-screen {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+    background: radial-gradient(ellipse at top, #1a0d2e 0%, #0a0416 55%, #030109 100%);
+    text-align: center;
+    transition: opacity 1s ease, transform 1s ease;
+    animation: fadeIn 0.8s ease;
+  }
+  .intro-screen.hide {
+    opacity: 0;
+    transform: scale(1.05);
+    pointer-events: none;
+  }
+  .intro-emojis {
+    font-size: 60px;
+    letter-spacing: 8px;
+    margin-bottom: 26px;
+    animation: introFloat 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 25px rgba(212, 175, 55, 0.6));
+  }
+  @keyframes introFloat {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-10px); }
+  }
+  .intro-orn {
+    font-size: 14px;
+    color: #d4af37;
+    letter-spacing: 12px;
+    margin-bottom: 18px;
+    opacity: 0.7;
+  }
+  .intro-h1 {
+    font-family: 'Georgia', serif;
+    color: #f4e4bc;
+    font-size: 30px;
+    font-weight: normal;
+    letter-spacing: 2px;
+    line-height: 1.35;
+    margin-bottom: 14px;
+    text-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+    max-width: 560px;
+  }
+  .intro-h1 b {
+    color: #ffd97d;
+    font-weight: bold;
+    text-shadow: 0 0 25px rgba(255, 217, 125, 0.9), 0 0 60px rgba(212, 175, 55, 0.5);
+  }
+  .intro-sub {
+    color: rgba(244, 228, 188, 0.7);
+    font-size: 15px;
+    font-style: italic;
+    letter-spacing: 1px;
+    margin-bottom: 40px;
+    line-height: 1.6;
+    max-width: 440px;
+  }
+  .intro-start-btn {
+    padding: 18px 52px;
+    border: 2px solid #d4af37;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.28), rgba(212, 175, 55, 0.08));
+    color: #ffd97d;
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.35s ease;
+    box-shadow: 0 0 35px rgba(212, 175, 55, 0.35), 0 10px 30px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+    animation: introBtnPulse 2.5s ease-in-out infinite;
+  }
+  .intro-start-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 217, 125, 0.5), transparent);
+    animation: shine 3s infinite;
+  }
+  @keyframes shine { 0% { left: -100%; } 50% { left: 100%; } 100% { left: 100%; } }
+  @keyframes introBtnPulse {
+    0%, 100% { box-shadow: 0 0 35px rgba(212, 175, 55, 0.35), 0 10px 30px rgba(0,0,0,0.5); }
+    50%      { box-shadow: 0 0 70px rgba(212, 175, 55, 0.7), 0 10px 30px rgba(0,0,0,0.5); }
+  }
+  .intro-start-btn:hover {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.5), rgba(212, 175, 55, 0.18));
+    transform: translateY(-3px) scale(1.04);
+    color: #fff;
+  }
+  .intro-start-btn:active { transform: scale(0.97); }
+
+  .intro-footer {
+    position: absolute;
+    bottom: 26px;
+    left: 0; right: 0;
+    text-align: center;
+    color: rgba(244, 228, 188, 0.4);
+    font-size: 12px;
+    font-style: italic;
+    letter-spacing: 2px;
+  }
+
   .screen {
     display: none;
     width: 100%;
@@ -287,7 +398,6 @@
     background: linear-gradient(90deg, transparent, rgba(255, 217, 228, 0.5), transparent);
     animation: shine 3s infinite;
   }
-  @keyframes shine { 0% { left: -100%; } 50% { left: 100%; } 100% { left: 100%; } }
   @keyframes kissPulse {
     0%, 100% { box-shadow: 0 0 30px rgba(255, 105, 180, 0.35), 0 10px 30px rgba(0,0,0,0.5); }
     50%      { box-shadow: 0 0 60px rgba(255, 105, 180, 0.7), 0 10px 30px rgba(0,0,0,0.5); }
@@ -532,13 +642,30 @@
     .final h2 { font-size: 21px; }
     .final-msg { font-size: 14.5px; }
     .final-msg.big { font-size: 18px; }
+    .intro-h1 { font-size: 22px; }
+    .intro-emojis { font-size: 46px; }
+    .intro-sub { font-size: 13.5px; margin-bottom: 32px; }
+    .intro-start-btn { font-size: 14px; padding: 15px 40px; letter-spacing: 4px; }
   }
 </style>
 </head>
 <body>
 
+<!-- СТАРТОВЫЙ ЭКРАН -->
+<div class="intro-screen" id="introScreen">
+  <div class="intro-emojis">✊ ✌️ ✋</div>
+  <div class="intro-orn">✦ ✦ ✦</div>
+  <h1 class="intro-h1">Готова <b>сыграть</b>?</h1>
+  <p class="intro-sub">
+    Правила простые: победи меня <b style="color:#ffd97d;">3 раза</b> — и получишь сюрприз.<br>
+    Но предупреждаю — я <b style="color:#ffd97d;">очень удачливый</b> 😏
+  </p>
+  <button class="intro-start-btn" id="startBtn">Начать игру</button>
+  <div class="intro-footer">Сделано с любовью 💛</div>
+</div>
+
 <!-- ЭКРАН 1: RPS -->
-<div class="screen active" id="screen-rps">
+<div class="screen" id="screen-rps">
   <div class="ornament">✦ ✦ ✦</div>
   <h1>Камень, ножницы, <b>бумага</b></h1>
   <p class="subtitle">Победи меня 3 раза — и я покажу тебе кое-что 💛</p>
@@ -644,16 +771,7 @@
     }
   };
 
-  // Видео, которое показывается ПЕРЕД путём поцелуев (когда проиграла 3 раза)
-  // Если оно не работает — оставь как есть, Алина просто увидит модалку с ошибкой
-  const KISS_PATH_VIDEO = {
-    emoji: "💋",
-    title: "Раз я победил...",
-    desc: "Смотри, что я для тебя приготовил. Раз я выиграл — теперь твоя очередь 💛",
-    url: "https://drive.google.com/file/d/105j0FVOAj_W7cSjnO3D23kLBZQFPr-kM/view?usp=sharing"
-  };
-
-  // Твоё фото для пути поцелуев (Google Drive thumbnail)
+  // Фото для пути поцелуев
   const YOUR_PHOTO_URL = "https://drive.google.com/thumbnail?id=105j0FVOAj_W7cSjnO3D23kLBZQFPr-kM&sz=w1000";
   const YOUR_PHOTO_EMOJI = "😎";
 
@@ -663,9 +781,10 @@
   const LOSS_TARGET = 3;
   const KISS_TARGET = 100;
 
-  /* ============================================================
-     ДАЛЬШЕ НИЧЕГО МЕНЯТЬ НЕ НУЖНО
-  ============================================================ */
+  /* ---------- ШАНСЫ (в сумме 100) ---------- */
+  const WIN_CHANCE  = 2;   // 2% побед
+  const DRAW_CHANCE = 8;   // 8% ничьих (остальное — проигрыш)
+  /* ============================================================ */
 
   const options = ['rock', 'scissors', 'paper'];
   const beats = { rock: 'scissors', scissors: 'paper', paper: 'rock' };
@@ -675,11 +794,23 @@
   let losses = 0;
   let busy = false;
 
+  const introScreen = document.getElementById('introScreen');
+  const startBtn = document.getElementById('startBtn');
   const winsEl = document.getElementById('winsCount');
   const lossesEl = document.getElementById('lossesCount');
   const yourPickEl = document.getElementById('yourPick');
   const myPickEl = document.getElementById('myPick');
   const resultEl = document.getElementById('resultText');
+
+  // ---------- СТАРТОВЫЙ ЭКРАН ----------
+  startBtn.addEventListener('click', () => {
+    introScreen.classList.add('hide');
+    setTimeout(() => {
+      introScreen.style.display = 'none';
+      document.getElementById('screen-rps').classList.add('active');
+      miniBurst(30, document.body);
+    }, 900);
+  });
 
   document.querySelectorAll('.choice').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -688,11 +819,29 @@
     });
   });
 
+  // Определяем желаемый исход (сначала), потом подбираем ход
+  function rollOutcome() {
+    const r = Math.random() * 100;
+    if (r < WIN_CHANCE) return 'win';
+    if (r < WIN_CHANCE + DRAW_CHANCE) return 'draw';
+    return 'lose';
+  }
+
+  function pickMyMove(userChoice, outcome) {
+    if (outcome === 'draw') return userChoice;
+    if (outcome === 'win') return beats[userChoice]; // мой ход проигрывает Алине
+    for (const opt of options) {
+      if (beats[opt] === userChoice) return opt; // мой ход побеждает
+    }
+    return options[0];
+  }
+
   function play(userChoice) {
     busy = true;
     document.querySelectorAll('.choice').forEach(b => b.disabled = true);
 
-    const meChoice = options[Math.floor(Math.random() * options.length)];
+    const outcome = rollOutcome();
+    const meChoice = pickMyMove(userChoice, outcome);
 
     yourPickEl.textContent = '?';
     myPickEl.textContent = '?';
@@ -745,12 +894,11 @@
         if (wins >= WIN_TARGET) {
           showFinalPath();
         } else if (losses >= LOSS_TARGET) {
+          // ⚡ СРАЗУ переход на поцелуи — без видео
           resultEl.textContent = 'Ладно, хватит играть. Иди сюда 💋';
           resultEl.className = 'result draw';
           setTimeout(() => {
-            showVideo(KISS_PATH_VIDEO, () => {
-              goToKisses();
-            });
+            goToKisses();
           }, 1400);
         } else {
           resetRound();
@@ -774,7 +922,7 @@
     document.querySelectorAll('.choice').forEach(b => b.disabled = false);
   }
 
-  // ⚡ Кнопка «Или просто закидай меня поцелуями» — СРАЗУ переход
+  // Кнопка «Или просто закидай меня поцелуями» — сразу переход
   document.getElementById('altBtn').addEventListener('click', () => {
     goToKisses();
   });
@@ -888,22 +1036,18 @@
   function getVideoHTML(url) {
     if (!url) return '<div style="color:#fff;display:flex;align-items:center;justify-content:center;height:100%;font-size:14px;">Видео не задано</div>';
 
-    // YouTube (watch, shorts, embed)
     let m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/);
     if (m) {
       return `<iframe id="ytIframe" src="https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1&autoplay=1&mute=1&playsinline=1&loop=1&playlist=${m[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
     }
 
-    // Google Drive
     m = url.match(/drive\.google\.com\/file\/d\/([^\/\?]+)/);
     if (m) return `<iframe src="https://drive.google.com/file/d/${m[1]}/preview?autoplay=1" allow="autoplay" allowfullscreen></iframe>`;
 
-    // VK
     if (url.includes('vk.com/video_ext') || url.includes('vkvideo.ru')) {
       return `<iframe src="${url}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
     }
 
-    // MP4
     if (/\.(mp4|webm|mov|m4v)(\?|$)/i.test(url)) {
       return `<video src="${url}" controls playsinline autoplay muted loop></video>`;
     }
@@ -918,10 +1062,11 @@
     videoDesc.textContent = v.desc || '';
     videoWrap.innerHTML = getVideoHTML(v.url);
 
-    // Кнопка звука — только для YouTube
     if (v.url && v.url.match(/(?:youtube\.com|youtu\.be)/)) {
       soundBtn.style.display = 'block';
       soundBtn.textContent = '🔊 Включить звук';
+      soundBtn.style.opacity = '1';
+      soundBtn.style.pointerEvents = 'auto';
     } else {
       soundBtn.style.display = 'none';
     }
@@ -944,7 +1089,6 @@
   modalClose.addEventListener('click', closeVideo);
   nextBtn.addEventListener('click', closeVideo);
 
-  // Кнопка «Включить звук» — перезапускает iframe с mute=0
   soundBtn.addEventListener('click', () => {
     const iframe = document.getElementById('ytIframe');
     if (!iframe) return;
@@ -1015,8 +1159,8 @@
 
   function miniBurst(count, targetEl) {
     const rect = targetEl.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
+    const cx = rect.left + rect.width / 2 || window.innerWidth / 2;
+    const cy = rect.top + rect.height / 2 || window.innerHeight / 2;
     const emojis = ['✨', '⭐', '💛', '🌟'];
     for (let i = 0; i < count; i++) {
       const p = document.createElement('div');
