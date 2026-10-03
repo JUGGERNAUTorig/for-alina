@@ -144,11 +144,11 @@
     opacity: 0;
     transition: opacity 1s ease;
   }
-  .hint.show { opacity: 1; animation: hintFade 7s ease forwards; }
+  .hint.show { opacity: 1; animation: hintFade 8s ease forwards; }
   @keyframes hintFade {
     0% { opacity: 0; }
     10% { opacity: 1; }
-    80% { opacity: 1; }
+    85% { opacity: 1; }
     100% { opacity: 0; }
   }
 
@@ -188,7 +188,7 @@
 
 <div class="loading-text" id="loadingText">Зажигаем звёзды...</div>
 
-<div class="hint" id="hint">🌌 Поворачивайся, чтобы осмотреться</div>
+<div class="hint" id="hint">🌌 Поворачивайся, читай по кругу</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script>
@@ -196,15 +196,23 @@
   'use strict';
 
   /* ============================================================
-     ⚙️ НАСТРОЙКА — можешь менять текст здесь
-     \n = перенос строки
+     ⚙️ НАСТРОЙКА ТЕКСТА
+     — Одна длинная строка, идёт по всему небу как кольцо 360°
      ============================================================ */
   const SKY_TEXT =
-    "Это всё для тебя, моя любимая.\n" +
-    "Я очень долго это делал\n" +
-    "и сделал только потому,\n" +
-    "что очень сильно тебя люблю,\n" +
-    "моя родная.";
+    "Это всё для тебя, моя любимая · я очень долго это делал · " +
+    "и сделал только потому, что очень сильно тебя люблю · " +
+    "моя родная · моя единственная · моя навсегда";
+
+  // Высота надписи на небе (в условных единицах).
+  // 220 — комфортно читается, можно увеличить до 300-350
+  const TEXT_HEIGHT = 240;
+
+  // Максимальная ширина текстуры (если текст не влезает — шрифт автоматически уменьшится)
+  const MAX_TEXTURE_WIDTH = 8000;
+
+  // Радиус кольца надписи. Чем больше — тем дальше она от тебя
+  const TEXT_RADIUS_FALLBACK = 800;
   /* ============================================================ */
 
   const introEl = document.getElementById('intro');
@@ -230,7 +238,6 @@
 
   let starsMaterial = null;
 
-  // ---------- INIT ----------
   function initThree() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0x000008);
@@ -249,8 +256,8 @@
 
     createStars();
     createBigStars();
-    createText();
     createNebula();
+    createTextCylinder(); // последним — поверх всего
 
     animate();
 
@@ -260,11 +267,10 @@
     window.addEventListener('touchmove', onTouchMove, { passive: true });
     window.addEventListener('touchend', onTouchEnd);
 
-    // Show hint
     setTimeout(() => hintEl.classList.add('show'), 500);
   }
 
-  // ---------- SMALL STARS ----------
+  // ---------- ОБЫЧНЫЕ ЗВЁЗДЫ ----------
   function createStars() {
     const count = 2500;
     const geo = new THREE.BufferGeometry();
@@ -275,7 +281,7 @@
     for (let i = 0; i < count; i++) {
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      const r = 800 + Math.random() * 400;
+      const r = 900 + Math.random() * 600;
 
       positions[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
       positions[i * 3 + 1] = r * Math.cos(phi);
@@ -291,7 +297,6 @@
       colors[i * 3]     = cr;
       colors[i * 3 + 1] = cg;
       colors[i * 3 + 2] = cb;
-
       sizes[i] = 1.5 + Math.random() * 3.5;
     }
 
@@ -333,11 +338,10 @@
       blending: THREE.AdditiveBlending
     });
 
-    const stars = new THREE.Points(geo, starsMaterial);
-    skyGroup.add(stars);
+    skyGroup.add(new THREE.Points(geo, starsMaterial));
   }
 
-  // ---------- BIG GLOWING STARS ----------
+  // ---------- КРУПНЫЕ СВЕТЯЩИЕСЯ ЗВЁЗДЫ ----------
   function createBigStars() {
     const count = 45;
     const geo = new THREE.BufferGeometry();
@@ -346,7 +350,7 @@
     for (let i = 0; i < count; i++) {
       const theta = Math.random() * Math.PI * 2;
       const phi = Math.acos(2 * Math.random() - 1);
-      const r = 700 + Math.random() * 400;
+      const r = 700 + Math.random() * 500;
       positions[i * 3]     = r * Math.sin(phi) * Math.cos(theta);
       positions[i * 3 + 1] = r * Math.cos(phi);
       positions[i * 3 + 2] = r * Math.sin(phi) * Math.sin(theta);
@@ -364,8 +368,7 @@
       map: createGlowTexture()
     });
 
-    const bigStars = new THREE.Points(geo, mat);
-    skyGroup.add(bigStars);
+    skyGroup.add(new THREE.Points(geo, mat));
   }
 
   function createGlowTexture() {
@@ -383,7 +386,7 @@
     return new THREE.CanvasTexture(c);
   }
 
-  // ---------- NEBULA ----------
+  // ---------- ТУМАННОСТИ ----------
   function createNebula() {
     const c = document.createElement('canvas');
     c.width = 512;
@@ -420,72 +423,100 @@
     }
   }
 
-  // ---------- TEXT AS STARS ----------
-  function createText() {
+  // ---------- ТЕКСТ КАК КОЛЬЦО ВОКРУГ НЕБА ----------
+  function createTextCylinder() {
+    // 1. Подбираем размер шрифта, чтобы текст влез в текстуру
+    const measureCanvas = document.createElement('canvas');
+    const mctx = measureCanvas.getContext('2d');
+
+    let fontSize = 140;
+    let textWidth = 0;
+    const sidePadding = 200;
+
+    while (true) {
+      mctx.font = 'bold ' + fontSize + 'px Georgia, "Times New Roman", serif';
+      textWidth = mctx.measureText(SKY_TEXT).width;
+      if (textWidth + sidePadding * 2 <= MAX_TEXTURE_WIDTH || fontSize <= 40) break;
+      fontSize -= 4;
+    }
+
+    const canvasWidth = Math.min(MAX_TEXTURE_WIDTH, Math.ceil(textWidth + sidePadding * 2));
+    // Высота текстуры — в 4 раза меньше высоты шрифта (компактная полоса)
+    const canvasHeight = Math.round(fontSize * 3);
+
+    // 2. Рисуем текст с красивым свечением
     const canvas = document.createElement('canvas');
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
     const ctx = canvas.getContext('2d');
-    canvas.width = 2048;
-    canvas.height = 1024;
 
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const lines = SKY_TEXT.split('\n');
-    const fontSize = 88;
-    const lineHeight = fontSize * 1.5;
-
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     ctx.font = 'bold ' + fontSize + 'px Georgia, "Times New Roman", serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
+
+    const cx = canvasWidth / 2;
+    const cy = canvasHeight / 2;
+
+    // Внешнее свечение
     ctx.fillStyle = '#ffe9b5';
-
-    const totalH = (lines.length - 1) * lineHeight;
-    const startY = (canvas.height - totalH) / 2;
-
-    // Outer glow
     ctx.shadowColor = '#ffd97d';
-    ctx.shadowBlur = 60;
-    lines.forEach((line, i) => {
-      ctx.fillText(line, canvas.width / 2, startY + i * lineHeight);
-    });
+    ctx.shadowBlur = 80;
+    ctx.fillText(SKY_TEXT, cx, cy);
 
-    // Inner glow
-    ctx.shadowBlur = 25;
-    lines.forEach((line, i) => {
-      ctx.fillText(line, canvas.width / 2, startY + i * lineHeight);
-    });
+    // Внутреннее свечение
+    ctx.shadowBlur = 30;
+    ctx.fillText(SKY_TEXT, cx, cy);
 
-    // Sharp pass
+    // Резкий контур
     ctx.shadowBlur = 0;
     ctx.fillStyle = '#fff8e0';
-    lines.forEach((line, i) => {
-      ctx.fillText(line, canvas.width / 2, startY + i * lineHeight);
-    });
+    ctx.fillText(SKY_TEXT, cx, cy);
 
+    // Ещё раз для яркости
+    ctx.shadowBlur = 12;
+    ctx.shadowColor = '#fff3c8';
+    ctx.fillText(SKY_TEXT, cx, cy);
+
+    // 3. Текстура
     const tex = new THREE.CanvasTexture(canvas);
     tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
     tex.minFilter = THREE.LinearFilter;
+    tex.magFilter = THREE.LinearFilter;
+    tex.wrapS = THREE.ClampToEdgeWrapping;
+    tex.wrapT = THREE.ClampToEdgeWrapping;
 
-    const mat = new THREE.MeshBasicMaterial({
+    // 4. Радиус цилиндра, чтобы высота надписи = TEXT_HEIGHT
+    // Формула: H_cylinder = (2πR) * canvasHeight / canvasWidth
+    // → R = H_cylinder * canvasWidth / (2π * canvasHeight)
+    const radius = (TEXT_HEIGHT * canvasWidth) / (2 * Math.PI * canvasHeight);
+
+    // 5. Цилиндр (открытый сверху и снизу, видно изнутри)
+    const geometry = new THREE.CylinderGeometry(radius, radius, TEXT_HEIGHT, 128, 1, true);
+
+    // Flip U так, чтобы текст читался правильно изнутри
+    const uvAttr = geometry.attributes.uv;
+    for (let i = 0; i < uvAttr.count; i++) {
+      uvAttr.setX(i, 1 - uvAttr.getX(i));
+    }
+    uvAttr.needsUpdate = true;
+
+    const material = new THREE.MeshBasicMaterial({
       map: tex,
       transparent: true,
-      opacity: 0.98,
+      opacity: 1,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
       depthTest: false,
-      side: THREE.DoubleSide
+      side: THREE.BackSide
     });
 
-    const width = 1100;
-    const height = width * (canvas.height / canvas.width);
-    const geo = new THREE.PlaneGeometry(width, height);
-    const mesh = new THREE.Mesh(geo, mat);
-    mesh.position.set(0, 0, -800);
-    mesh.rotation.y = Math.PI;
-
-    skyGroup.add(mesh);
+    const cylinder = new THREE.Mesh(geometry, material);
+    cylinder.renderOrder = 999;
+    skyGroup.add(cylinder);
   }
 
-  // ---------- ANIMATE ----------
+  // ---------- АНИМАЦИЯ ----------
   const clock = new THREE.Clock();
 
   function animate() {
@@ -494,11 +525,8 @@
     const t = clock.getElapsedTime();
     if (starsMaterial) starsMaterial.uniforms.uTime.value = t;
 
-    // Determine target based on input
     if (useDeviceOrientation && hasOrientation) {
-      // alpha delta from initial position
       let alphaDelta = deviceAlpha - initialAlpha;
-      // Normalize to -180..180
       while (alphaDelta > 180) alphaDelta -= 360;
       while (alphaDelta < -180) alphaDelta += 360;
 
@@ -506,7 +534,6 @@
       targetRotationX = THREE.MathUtils.degToRad(90 - deviceBeta);
     }
 
-    // Smooth lerp
     currentRotationY += (targetRotationY - currentRotationY) * 0.09;
     currentRotationX += (targetRotationX - currentRotationX) * 0.09;
 
@@ -516,7 +543,7 @@
     renderer.render(scene, camera);
   }
 
-  // ---------- DEVICE ORIENTATION ----------
+  // ---------- ДАТЧИКИ ----------
   function onDeviceOrientation(event) {
     if (event.alpha === null || event.alpha === undefined) return;
     if (initialAlpha === null) initialAlpha = event.alpha;
@@ -525,7 +552,7 @@
     deviceBeta = event.beta !== null ? event.beta : 90;
   }
 
-  // ---------- MOUSE (desktop) ----------
+  // ---------- МЫШЬ ----------
   function onMouseMove(e) {
     if (useDeviceOrientation && hasOrientation) return;
     const x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -534,7 +561,7 @@
     targetRotationX = -y * Math.PI * 0.5;
   }
 
-  // ---------- TOUCH DRAG (mobile fallback) ----------
+  // ---------- ПАЛЕЦ ----------
   function onTouchStart(e) {
     if (useDeviceOrientation && hasOrientation) return;
     const t = e.touches[0];
@@ -560,7 +587,7 @@
     dragging = false;
   }
 
-  // ---------- PERMISSION (iOS) ----------
+  // ---------- iOS РАЗРЕШЕНИЕ ----------
   async function requestOrientation() {
     if (typeof DeviceOrientationEvent === 'undefined') return false;
     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
@@ -584,18 +611,14 @@
 
   // ---------- START ----------
   startBtn.addEventListener('click', async () => {
-    // Show loading
     loadingText.classList.add('show');
 
-    // Request permission
     const granted = await requestOrientation();
-
     if (granted) {
       window.addEventListener('deviceorientation', onDeviceOrientation, true);
       useDeviceOrientation = true;
     }
 
-    // Fade out intro
     introEl.classList.add('hide');
 
     setTimeout(() => {
@@ -603,11 +626,10 @@
       loadingText.classList.remove('show');
       initThree();
 
-      // If after 2 seconds we didn't receive orientation data — fallback
       setTimeout(() => {
         if (useDeviceOrientation && !hasOrientation) {
           useDeviceOrientation = false;
-          hintEl.textContent = '👆 Проведите пальцем, чтобы осмотреться';
+          hintEl.textContent = '👆 Проведи пальцем, чтобы осмотреться';
           hintEl.classList.remove('show');
           void hintEl.offsetWidth;
           hintEl.classList.add('show');
