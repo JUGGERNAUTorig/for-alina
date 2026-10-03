@@ -204,7 +204,6 @@
     border-color: #d4af37;
   }
 
-  /* Путь поцелуев */
   .photo-area {
     position: relative;
     width: 280px;
@@ -301,7 +300,6 @@
   .kiss-btn:active:not(:disabled) { transform: scale(0.97); }
   .kiss-btn:disabled { opacity: 0.5; cursor: not-allowed; animation: none; }
 
-  /* Модалка видео */
   .modal {
     position: fixed;
     inset: 0;
@@ -401,7 +399,6 @@
   }
   .modal-btn:active { transform: translateY(0); }
 
-  /* Финальный экран */
   .final {
     display: none;
     position: fixed;
@@ -600,34 +597,41 @@
 
 <script>
   /* ============================================================
-     ⚙️ ГЛАВНАЯ НАСТРОЙКА — МЕНЯЙ ЗДЕСЬ
+     ⚙️ ГЛАВНАЯ НАСТРОЙКА
      ============================================================ */
 
   // Видео привязаны к МОЕМУ ходу
-  const MY_VIDEOS = {
+    const MY_VIDEOS = {
     rock: {
       emoji: "🪨",
       title: "Камень",
       desc: "Смотри, что я достаю...",
-      url: "https://drive.google.com/file/d/1_XmHo0bo9IUJTO0lgWs3tRqk8FDCA_XG/view?usp=sharing"
+      url: "https://youtube.com/shorts/q4wYm-Ribik"
     },
     scissors: {
       emoji: "✂️",
       title: "Ножницы",
       desc: "Осторожно, они острые...",
-      url: "https://drive.google.com/file/d/1otTMfsFsyk8Qkl2qe5RASx_BuJTY6V9u/view?usp=sharing"
+      url: "https://youtube.com/shorts/15TTeDdJ6dM"
     },
     paper: {
       emoji: "📄",
       title: "Бумага",
       desc: "А вот и бумага. Как наша история — чистая и светлая.",
-      url: "https://drive.google.com/file/d/1vDrkV6FNPFo9Nd8iuSsXO7ti--uA2yyI/view?usp=sharing"
+      url: "https://youtube.com/shorts/okdIS2jz1ZI"
     }
   };
 
-  // Твоё фото для пути поцелуев
-  // Оставь пустым "" и будет использован эмодзи ниже
-  const YOUR_PHOTO_URL = "";
+  // Видео, которое показывается ПЕРЕД путём поцелуев (когда проиграла 3 раза)
+  const KISS_PATH_VIDEO = {
+    emoji: "💋",
+    title: "Раз я победил...",
+    desc: "Смотри, что я для тебя приготовил. Раз я выиграл — теперь твоя очередь 💛",
+    url: "https://drive.google.com/file/d/105j0FVOAj_W7cSjnO3D23kLBZQFPr-kM/view?usp=sharing"
+  };
+
+  // Твоё фото для пути поцелуев (через thumbnail Google Drive)
+  const YOUR_PHOTO_URL = "https://drive.google.com/thumbnail?id=105j0FVOAj_W7cSjnO3D23kLBZQFPr-kM&sz=w1000";
   const YOUR_PHOTO_EMOJI = "😎";
 
   const GIRL_NAME = "АЛИНА";
@@ -684,7 +688,6 @@
   }
 
   function resolve(userChoice, meChoice) {
-    // Ничья — просто переигровка
     if (userChoice === meChoice) {
       resultEl.textContent = 'Ничья! Ещё раз 😏';
       resultEl.className = 'result draw';
@@ -714,16 +717,18 @@
       resultEl.className = 'result lose';
     }
 
-    // Показываем видео МОЕГО хода
     setTimeout(() => {
       showVideo(MY_VIDEOS[meChoice], () => {
-        // После просмотра — проверяем условия
         if (wins >= WIN_TARGET) {
           showFinalPath();
         } else if (losses >= LOSS_TARGET) {
           resultEl.textContent = 'Ладно, хватит играть. Иди сюда 💋';
           resultEl.className = 'result draw';
-          setTimeout(goToKisses, 1400);
+          setTimeout(() => {
+            showVideo(KISS_PATH_VIDEO, () => {
+              goToKisses();
+            });
+          }, 1400);
         } else {
           resetRound();
           unlock();
@@ -746,10 +751,9 @@
     document.querySelectorAll('.choice').forEach(b => b.disabled = false);
   }
 
+  // ⚡ Кнопка «Или просто закидай меня поцелуями» — СРАЗУ переход, без видео
   document.getElementById('altBtn').addEventListener('click', () => {
-    if (confirm('Точно хочешь пропустить игру и сразу перейти к поцелуям? 💋')) {
-      goToKisses();
-    }
+    goToKisses();
   });
 
   function goToKisses() {
@@ -768,7 +772,7 @@
   let kissBusy = false;
 
   if (YOUR_PHOTO_URL) {
-    photoImg.innerHTML = `<img src="${YOUR_PHOTO_URL}" alt="Я">`;
+    photoImg.innerHTML = `<img src="${YOUR_PHOTO_URL}" alt="Я" onerror="this.parentElement.textContent='${YOUR_PHOTO_EMOJI}'">`;
   } else {
     photoImg.textContent = YOUR_PHOTO_EMOJI;
   }
@@ -859,15 +863,11 @@
 
   function getVideoHTML(url) {
     if (!url) return '<div style="color:#fff;display:flex;align-items:center;justify-content:center;height:100%;font-size:14px;">Видео не задано</div>';
-    // YouTube
     let m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/);
     if (m) return `<iframe src="https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
-    // Google Drive
     m = url.match(/drive\.google\.com\/file\/d\/([^\/\?]+)/);
     if (m) return `<iframe src="https://drive.google.com/file/d/${m[1]}/preview" allow="autoplay" allowfullscreen></iframe>`;
-    // VK
     if (url.includes('vk.com/video_ext') || url.includes('vkvideo.ru')) return `<iframe src="${url}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
-    // MP4
     if (/\.(mp4|webm|mov|m4v)(\?|$)/i.test(url)) return `<video src="${url}" controls playsinline preload="metadata"></video>`;
     return `<iframe src="${url}" allowfullscreen></iframe>`;
   }
