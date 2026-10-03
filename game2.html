@@ -341,14 +341,14 @@
   .video-wrap {
     width: 100%;
     aspect-ratio: 9/16;
-    max-height: 65vh;
+    max-height: 60vh;
     background: #000;
     border-radius: 16px;
     overflow: hidden;
     border: 2px solid rgba(212, 175, 55, 0.5);
     box-shadow: 0 0 60px rgba(212, 175, 55, 0.25);
-    margin: 0 auto 20px;
-    max-width: 400px;
+    margin: 0 auto 12px;
+    max-width: 380px;
   }
   .video-wrap iframe,
   .video-wrap video {
@@ -375,6 +375,27 @@
     max-width: 520px;
     margin: 0 auto 22px;
     padding: 0 8px;
+  }
+  .sound-btn {
+    display: block;
+    margin: 0 auto 14px;
+    padding: 10px 22px;
+    border: 1px solid rgba(212, 175, 55, 0.5);
+    border-radius: 10px;
+    background: rgba(212, 175, 55, 0.12);
+    color: #ffd97d;
+    font-family: 'Georgia', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  .sound-btn:hover {
+    background: rgba(212, 175, 55, 0.25);
+    color: #fff;
+    border-color: #d4af37;
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
   }
   .modal-btn {
     padding: 14px 34px;
@@ -578,6 +599,7 @@
     <div class="video-emoji" id="videoEmoji">🎬</div>
     <h2 class="video-title" id="videoTitle">—</h2>
     <div class="video-wrap" id="videoWrap"></div>
+    <button class="sound-btn" id="soundBtn" style="display:none;">🔊 Включить звук</button>
     <p class="video-desc" id="videoDesc">—</p>
     <button class="modal-btn" id="nextBtn">Дальше</button>
   </div>
@@ -600,8 +622,8 @@
      ⚙️ ГЛАВНАЯ НАСТРОЙКА
      ============================================================ */
 
-  // Видео привязаны к МОЕМУ ходу
-    const MY_VIDEOS = {
+  // Видео привязаны к МОЕМУ ходу (YouTube Shorts)
+  const MY_VIDEOS = {
     rock: {
       emoji: "🪨",
       title: "Камень",
@@ -623,6 +645,7 @@
   };
 
   // Видео, которое показывается ПЕРЕД путём поцелуев (когда проиграла 3 раза)
+  // Если оно не работает — оставь как есть, Алина просто увидит модалку с ошибкой
   const KISS_PATH_VIDEO = {
     emoji: "💋",
     title: "Раз я победил...",
@@ -630,7 +653,7 @@
     url: "https://drive.google.com/file/d/105j0FVOAj_W7cSjnO3D23kLBZQFPr-kM/view?usp=sharing"
   };
 
-  // Твоё фото для пути поцелуев (через thumbnail Google Drive)
+  // Твоё фото для пути поцелуев (Google Drive thumbnail)
   const YOUR_PHOTO_URL = "https://drive.google.com/thumbnail?id=105j0FVOAj_W7cSjnO3D23kLBZQFPr-kM&sz=w1000";
   const YOUR_PHOTO_EMOJI = "😎";
 
@@ -751,7 +774,7 @@
     document.querySelectorAll('.choice').forEach(b => b.disabled = false);
   }
 
-  // ⚡ Кнопка «Или просто закидай меня поцелуями» — СРАЗУ переход, без видео
+  // ⚡ Кнопка «Или просто закидай меня поцелуями» — СРАЗУ переход
   document.getElementById('altBtn').addEventListener('click', () => {
     goToKisses();
   });
@@ -858,17 +881,33 @@
   const videoTitle = document.getElementById('videoTitle');
   const videoDesc = document.getElementById('videoDesc');
   const videoEmoji = document.getElementById('videoEmoji');
+  const soundBtn = document.getElementById('soundBtn');
 
   let currentCallback = null;
 
   function getVideoHTML(url) {
     if (!url) return '<div style="color:#fff;display:flex;align-items:center;justify-content:center;height:100%;font-size:14px;">Видео не задано</div>';
+
+    // YouTube (watch, shorts, embed)
     let m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]+)/);
-    if (m) return `<iframe src="https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    if (m) {
+      return `<iframe id="ytIframe" src="https://www.youtube-nocookie.com/embed/${m[1]}?rel=0&modestbranding=1&autoplay=1&mute=1&playsinline=1&loop=1&playlist=${m[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>`;
+    }
+
+    // Google Drive
     m = url.match(/drive\.google\.com\/file\/d\/([^\/\?]+)/);
-    if (m) return `<iframe src="https://drive.google.com/file/d/${m[1]}/preview" allow="autoplay" allowfullscreen></iframe>`;
-    if (url.includes('vk.com/video_ext') || url.includes('vkvideo.ru')) return `<iframe src="${url}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
-    if (/\.(mp4|webm|mov|m4v)(\?|$)/i.test(url)) return `<video src="${url}" controls playsinline preload="metadata"></video>`;
+    if (m) return `<iframe src="https://drive.google.com/file/d/${m[1]}/preview?autoplay=1" allow="autoplay" allowfullscreen></iframe>`;
+
+    // VK
+    if (url.includes('vk.com/video_ext') || url.includes('vkvideo.ru')) {
+      return `<iframe src="${url}" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" allowfullscreen></iframe>`;
+    }
+
+    // MP4
+    if (/\.(mp4|webm|mov|m4v)(\?|$)/i.test(url)) {
+      return `<video src="${url}" controls playsinline autoplay muted loop></video>`;
+    }
+
     return `<iframe src="${url}" allowfullscreen></iframe>`;
   }
 
@@ -878,6 +917,15 @@
     videoTitle.textContent = v.title || '';
     videoDesc.textContent = v.desc || '';
     videoWrap.innerHTML = getVideoHTML(v.url);
+
+    // Кнопка звука — только для YouTube
+    if (v.url && v.url.match(/(?:youtube\.com|youtu\.be)/)) {
+      soundBtn.style.display = 'block';
+      soundBtn.textContent = '🔊 Включить звук';
+    } else {
+      soundBtn.style.display = 'none';
+    }
+
     modal.classList.add('show');
     document.body.style.overflow = 'hidden';
   }
@@ -895,6 +943,17 @@
 
   modalClose.addEventListener('click', closeVideo);
   nextBtn.addEventListener('click', closeVideo);
+
+  // Кнопка «Включить звук» — перезапускает iframe с mute=0
+  soundBtn.addEventListener('click', () => {
+    const iframe = document.getElementById('ytIframe');
+    if (!iframe) return;
+    const src = iframe.src.replace('mute=1', 'mute=0');
+    iframe.src = src;
+    soundBtn.textContent = '🔇 Звук включён';
+    soundBtn.style.opacity = '0.6';
+    soundBtn.style.pointerEvents = 'none';
+  });
 
   // ---------- Финал ----------
   function showFinalPath() {
