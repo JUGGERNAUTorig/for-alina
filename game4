@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
+<meta name="theme-color" content="#000008">
+<title>Салют для тебя 💛</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    overflow: hidden;
+    background: #000008;
+    font-family: 'Georgia', 'Times New Roman', serif;
+    color: #f4e4bc;
+    -webkit-user-select: none;
+    user-select: none;
+    touch-action: none;
+  }
+  canvas {
+    display: block;
+    position: fixed;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+  }
+
+  .intro {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 24px;
+    background: radial-gradient(ellipse at center, #0a0620 0%, #000008 70%);
+    text-align: center;
+    transition: opacity 1.5s ease;
+  }
+  .intro.hide { opacity: 0; pointer-events: none; }
+
+  .intro-ornament {
+    font-size: 14px;
+    color: #d4af37;
+    letter-spacing: 12px;
+    margin-bottom: 22px;
+    opacity: 0.7;
+  }
+  .intro-h1 {
+    font-size: 28px;
+    font-weight: normal;
+    letter-spacing: 2px;
+    line-height: 1.4;
+    margin-bottom: 16px;
+    color: #f4e4bc;
+    text-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+    max-width: 520px;
+  }
+  .intro-h1 b {
+    color: #ffd97d;
+    font-weight: bold;
+    text-shadow: 0 0 30px rgba(255, 217, 125, 0.9);
+  }
+  .intro-sub {
+    font-size: 15px;
+    font-style: italic;
+    color: rgba(244, 228, 188, 0.65);
+    line-height: 1.7;
+    margin-bottom: 40px;
+    max-width: 460px;
+    letter-spacing: 0.5px;
+  }
+  .intro-hint {
+    font-size: 12px;
+    color: rgba(244, 228, 188, 0.4);
+    letter-spacing: 1.5px;
+    margin-top: 24px;
+    font-style: italic;
+    max-width: 420px;
+    line-height: 1.7;
+  }
+  .intro-btn {
+    padding: 18px 52px;
+    border: 2px solid #d4af37;
+    border-radius: 16px;
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.28), rgba(212, 175, 55, 0.08));
+    color: #ffd97d;
+    font-family: 'Georgia', serif;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.35s ease;
+    box-shadow: 0 0 35px rgba(212, 175, 55, 0.35);
+    position: relative;
+    overflow: hidden;
+    animation: btnPulse 2.5s ease-in-out infinite;
+  }
+  .intro-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 217, 125, 0.5), transparent);
+    animation: shine 3s infinite;
+  }
+  @keyframes shine { 0% { left: -100%; } 50% { left: 100%; } 100% { left: 100%; } }
+  @keyframes btnPulse {
+    0%, 100% { box-shadow: 0 0 35px rgba(212, 175, 55, 0.35); }
+    50%      { box-shadow: 0 0 70px rgba(212, 175, 55, 0.8); }
+  }
+  .intro-btn:hover {
+    background: linear-gradient(135deg, rgba(212, 175, 55, 0.5), rgba(212, 175, 55, 0.18));
+    transform: translateY(-3px) scale(1.04);
+    color: #fff;
+  }
+  .intro-btn:active { transform: scale(0.97); }
+
+  .hint {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    padding: 10px 22px;
+    background: rgba(0, 0, 0, 0.55);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 20px;
+    color: rgba(244, 228, 188, 0.75);
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    font-style: italic;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1s ease;
+  }
+  .hint.show { opacity: 1; animation: hintFade 8s ease forwards; }
+  @keyframes hintFade {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    85% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+
+  .loading-text {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(244, 228, 188, 0.6);
+    font-size: 14px;
+    letter-spacing: 2px;
+    z-index: 90;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .loading-text.show { opacity: 1; }
+</style>
+</head>
+<body>
+
+<div class="intro" id="intro">
+  <div class="intro-ornament">✦ ✦ ✦</div>
+  <h1 class="intro-h1">Салют <b>для тебя</b> 🎆</h1>
+  <p class="intro-sub">
+    Повернись вокруг — небо будет взрываться<br>
+    и говорить тебе то, что я чувствую.
+  </p>
+  <button class="intro-btn" id="startBtn">Запустить салют</button>
+  <div class="intro-hint">
+    📱 На телефоне — поворачивайся вокруг<br>
+    💻 На компьютере — веди мышкой<br>
+    👆 Тапни в любую точку — будет новый взрыв
+  </div>
+</div>
+
+<div class="loading-text" id="loadingText">Готовим небо...</div>
+<div class="hint" id="hint">🌌 Поворачивайся и смотри салют</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  /* ============================================================
+     ⚙️ НАСТРОЙКА
+     ============================================================ */
+
+  // Фразы, которые появляются с каждым взрывом
+  const PHRASES = [
+    "Я тебя люблю",
+    "Ты лучшая",
+    "Ты моё всё",
+    "Моя родная",
+    "Самая красивая",
+    "Ты моё счастье",
+    "Люблю бесконечно",
+    "Ты моя вселенная",
+    "Самая любимая",
+    "Ты — моя мечта",
+    "Моё сердце — твоё",
+    "С тобой навсегда",
+    "Ты — чудо",
+    "Моя единственная",
+    "Обожаю тебя"
+  ];
+
+  // Цвета частиц салюта (золотой, розовый, белый, фиолетовый, бирюзовый)
+  const FIREWORK_COLORS = [
+    0xffd97d, 0xffb6c1, 0xffffff, 0xc8a2ff, 0xa8e6ff, 0xff9ec4
+  ];
+
+  // Интервал между автоматическими салютами (мс)
+  const AUTO_INTERVAL = 2400;
+
+  // Количество частиц в одном взрыве
+  const PARTICLES_PER_BURST = 90;
+
+  // Радиус, на котором происходят взрывы (от центра)
+  const BURST_RADIUS_MIN = 600;
+  const BURST_RADIUS_MAX = 950;
+
+  /* ============================================================ */
+
+  const introEl = document.getElementById('intro');
+  const startBtn = document.getElementById('startBtn');
+  const hintEl = document.getElementById('hint');
+  const loadingText = document.getElementById('loadingText');
+
+  let scene, camera, renderer, world;
+  let targetRotationX = 0;
+  let targetRotationY = 0;
+  let currentRotationX = 0;
+  let currentRotationY = 0;
+
+  let useDeviceOrientation = false;
+  let hasOrientation = false;
+  let initialAlpha = null;
+  let deviceAlpha = 0;
+  let deviceBeta = 90;
+
+  let dragging = false;
+  let dragStartX = 0, dragStartY = 0;
+  let dragStartRotX = 0, dragStartRotY = 0;
+  let dragMoved = false;
+
+  let starsMaterial = null;
+  let fireworkList = [];
+  let autoTimer = null;
+  let phraseIndex = 0;
+
+  const clock = new THREE.Clock();
+
+  // ---------- INIT ----------
+  function initThree() {
+    scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x000008);
+    scene.fog = new THREE.FogExp2(0x000008, 0.00025);
+
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+    camera.position.set(0, 0, 0);
+
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    document.body.appendChild(renderer.domElement);
+
+    world = new THREE.Group();
+    world.rotation.order = 'YXZ';
+    scene.add(world);
+
+    createStars();
+    createBigStars();
+    createNebula();
+
+    animate();
+
+    window.addEventListener('resize', onResize);
+    window.addEventListener('mousemove', onMouseMove);
+    window.addEventListener('touchstart', onTouchStart, { passive: true });
+    window.addEventListener('touchmove', onTouchMove, { passive: true });
+    window.addEventListener('touchend', onTouchEnd);
+    document.addEventListener('click', onCanvasClick);
+
+    setTimeout(() => hintEl.classList.add('show'), 400);
+  }
+
+  // ---------- STARS ----------
+  function createStars() {
+    const count = 2800;
+    const geo = new THREE.BufferGeometry();
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    const sizes = new Float32Array(count);
+
+    for (let i = 0; i < count; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const r = 1100 + Math.random() * 500;
+      positions[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+      positions[i*3+1] = r * Math.cos(phi);
+      positions[i*3+2] = r * Math.sin(phi) * Math.sin(theta);
+
+      const roll = Math.random();
+      let cr, cg, cb;
+      if (roll < 0.55) { cr = 1; cg = 1; cb = 1; }
+      else if (roll < 0.75) { cr = 1; cg = 0.9; cb = 0.6; }
+      else if (roll < 0.9) { cr = 0.85; cg = 0.9; cb = 1; }
+      else { cr = 1; cg = 0.85; cb = 0.9; }
+      colors[i*3] = cr; colors[i*3+1] = cg; colors[i*3+2] = cb;
+      sizes[i] = 1.5 + Math.random() * 3.5;
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+    starsMaterial = new THREE.ShaderMaterial({
+      uniforms: { uTime: { value: 0 } },
+      vertexShader: [
+        'attribute float size;',
+        'attribute vec3 color;',
+        'varying vec3 vColor;',
+        'varying float vTwinkle;',
+        'uniform float uTime;',
+        'void main() {',
+        '  vColor = color;',
+        '  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);',
+        '  gl_PointSize = size * (350.0 / -mvPosition.z);',
+        '  gl_Position = projectionMatrix * mvPosition;',
+        '  float seed = position.x * 0.01 + position.y * 0.02 + position.z * 0.03;',
+        '  vTwinkle = 0.65 + 0.35 * sin(uTime * 2.0 + seed * 6.28);',
+        '}'
+      ].join('\n'),
+      fragmentShader: [
+        'varying vec3 vColor;',
+        'varying float vTwinkle;',
+        'void main() {',
+        '  vec2 c = gl_PointCoord - 0.5;',
+        '  float d = length(c);',
+        '  if (d > 0.5) discard;',
+        '  float alpha = smoothstep(0.5, 0.0, d);',
+        '  alpha = pow(alpha, 1.8);',
+        '  gl_FragColor = vec4(vColor, alpha * vTwinkle);',
+        '}'
+      ].join('\n'),
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+
+    world.add(new THREE.Points(geo, starsMaterial));
+  }
+
+  function createBigStars() {
+    const count = 55;
+    const geo = new THREE.BufferGeometry();
+    const positions = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const r = 900 + Math.random() * 500;
+      positions[i*3]   = r * Math.sin(phi) * Math.cos(theta);
+      positions[i*3+1] = r * Math.cos(phi);
+      positions[i*3+2] = r * Math.sin(phi) * Math.sin(theta);
+    }
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    const mat = new THREE.PointsMaterial({
+      color: 0xffd97d, size: 14, transparent: true, opacity: 0.9,
+      sizeAttenuation: true, blending: THREE.AdditiveBlending,
+      depthWrite: false, map: createGlowTexture()
+    });
+    world.add(new THREE.Points(geo, mat));
+  }
+
+  function createGlowTexture() {
+    const c = document.createElement('canvas');
+    c.width = 128; c.height = 128;
+    const ctx = c.getContext('2d');
+    const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    g.addColorStop(0, 'rgba(255, 245, 210, 1)');
+    g.addColorStop(0.25, 'rgba(255, 217, 125, 0.7)');
+    g.addColorStop(0.6, 'rgba(255, 217, 125, 0.15)');
+    g.addColorStop(1, 'rgba(255, 217, 125, 0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 128, 128);
+    return new THREE.CanvasTexture(c);
+  }
+
+  function createNebula() {
+    const c = document.createElement('canvas');
+    c.width = 512; c.height = 512;
+    const ctx = c.getContext('2d');
+    const g = ctx.createRadialGradient(256, 256, 0, 256, 256, 256);
+    g.addColorStop(0, 'rgba(90, 45, 130, 0.4)');
+    g.addColorStop(0.4, 'rgba(50, 25, 90, 0.18)');
+    g.addColorStop(1, 'rgba(0, 0, 0, 0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, 512, 512);
+    const tex = new THREE.CanvasTexture(c);
+
+    for (let i = 0; i < 5; i++) {
+      const mat = new THREE.SpriteMaterial({
+        map: tex, transparent: true, opacity: 0.55,
+        blending: THREE.AdditiveBlending, depthWrite: false
+      });
+      const sprite = new THREE.Sprite(mat);
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const r = 1600;
+      sprite.position.set(
+        r * Math.sin(phi) * Math.cos(theta),
+        r * Math.cos(phi) * 0.6,
+        r * Math.sin(phi) * Math.sin(theta)
+      );
+      sprite.scale.set(1500, 1500, 1);
+      world.add(sprite);
+    }
+  }
+
+  // ---------- FIREWORK ----------
+  function spawnFirework(center) {
+    const radius = BURST_RADIUS_MIN + Math.random() * (BURST_RADIUS_MAX - BURST_RADIUS_MIN);
+
+    let bx, by, bz;
+    if (center) {
+      bx = center.x; by = center.y; bz = center.z;
+    } else {
+      // Случайная точка на сфере
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      bx = radius * Math.sin(phi) * Math.cos(theta);
+      by = radius * Math.cos(phi) * 0.7; // чуть сжать по вертикали
+      bz = radius * Math.sin(phi) * Math.sin(theta);
+    }
+
+    const color = FIREWORK_COLORS[Math.floor(Math.random() * FIREWORK_COLORS.length)];
+    const color2 = FIREWORK_COLORS[Math.floor(Math.random() * FIREWORK_COLORS.length)];
+
+    const count = PARTICLES_PER_BURST;
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    const velocities = new Float32Array(count * 3);
+    const sizes = new Float32Array(count);
+
+    const c1 = new THREE.Color(color);
+    const c2 = new THREE.Color(color2);
+
+    for (let i = 0; i < count; i++) {
+      positions[i*3] = bx;
+      positions[i*3+1] = by;
+      positions[i*3+2] = bz;
+
+      // Случайное направление
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const speed = 4 + Math.random() * 8;
+
+      velocities[i*3]   = Math.sin(phi) * Math.cos(theta) * speed;
+      velocities[i*3+1] = Math.cos(phi) * speed;
+      velocities[i*3+2] = Math.sin(phi) * Math.sin(theta) * speed;
+
+      // Смешение цветов
+      const mix = Math.random();
+      const cc = c1.clone().lerp(c2, mix);
+      colors[i*3] = cc.r;
+      colors[i*3+1] = cc.g;
+      colors[i*3+2] = cc.b;
+
+      sizes[i] = 2 + Math.random() * 4;
+    }
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+    const mat = new THREE.ShaderMaterial({
+      uniforms: {
+        uOpacity: { value: 1.0 }
+      },
+      vertexShader: [
+        'attribute float size;',
+        'attribute vec3 color;',
+        'varying vec3 vColor;',
+        'void main() {',
+        '  vColor = color;',
+        '  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);',
+        '  gl_PointSize = size * (450.0 / -mvPosition.z);',
+        '  gl_Position = projectionMatrix * mvPosition;',
+        '}'
+      ].join('\n'),
+      fragmentShader: [
+        'varying vec3 vColor;',
+        'uniform float uOpacity;',
+        'void main() {',
+        '  vec2 c = gl_PointCoord - 0.5;',
+        '  float d = length(c);',
+        '  if (d > 0.5) discard;',
+        '  float alpha = smoothstep(0.5, 0.0, d);',
+        '  alpha = pow(alpha, 1.8);',
+        '  gl_FragColor = vec4(vColor, alpha * uOpacity);',
+        '}'
+      ].join('\n'),
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+
+    const points = new THREE.Points(geo, mat);
+    world.add(points);
+
+    // Текст-фраза рядом с взрывом
+    const phrase = PHRASES[phraseIndex % PHRASES.length];
+    phraseIndex++;
+
+    const textSprite = createTextSprite(phrase);
+    // Располагаем текст чуть выше взрыва и ближе к зрителю (к центру)
+    const textPos = new THREE.Vector3(bx, by, bz);
+    textPos.multiplyScalar(0.78);
+    textPos.y += 60 + Math.random() * 40;
+    textSprite.position.copy(textPos);
+    textSprite.material.opacity = 0;
+    world.add(textSprite);
+
+    fireworkList.push({
+      points, geo, mat, velocities, sizes,
+      life: 0,
+      maxLife: 3.6,
+      textSprite,
+      textLife: 0,
+      textMaxLife: 4.5,
+      basePositions: new Float32Array(positions)
+    });
+  }
+
+  // ---------- TEXT SPRITE ----------
+  function createTextSprite(text) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    // Размер canvas зависит от длины текста
+    const fontSize = 90;
+    ctx.font = 'bold ' + fontSize + 'px Georgia, "Times New Roman", serif';
+    const metrics = ctx.measureText(text);
+
+    canvas.width = Math.ceil(metrics.width + 200);
+    canvas.height = fontSize * 2.4;
+
+    const ctx2 = canvas.getContext('2d');
+    ctx2.clearRect(0, 0, canvas.width, canvas.height);
+    ctx2.font = 'bold ' + fontSize + 'px Georgia, "Times New Roman", serif';
+    ctx2.textAlign = 'center';
+    ctx2.textBaseline = 'middle';
+
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    // Внешнее свечение
+    ctx2.fillStyle = '#fff2c8';
+    ctx2.shadowColor = '#ffd97d';
+    ctx2.shadowBlur = 60;
+    ctx2.fillText(text, cx, cy);
+
+    // Внутреннее свечение
+    ctx2.shadowBlur = 25;
+    ctx2.fillText(text, cx, cy);
+
+    // Резкий контур
+    ctx2.shadowBlur = 0;
+    ctx2.fillStyle = '#fff8e0';
+    ctx2.fillText(text, cx, cy);
+
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.minFilter = THREE.LinearFilter;
+
+    const mat = new THREE.SpriteMaterial({
+      map: tex,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      depthTest: false
+    });
+
+    const sprite = new THREE.Sprite(mat);
+
+    // Масштаб спрайта — чтобы читалось на любом расстоянии
+    const scaleFactor = 0.55;
+    const w = canvas.width * scaleFactor;
+    const h = canvas.height * scaleFactor;
+    sprite.scale.set(w, h, 1);
+
+    return sprite;
+  }
+
+  // ---------- ANIMATE ----------
+  function animate() {
+    requestAnimationFrame(animate);
+
+    const dt = Math.min(clock.getDelta(), 0.05);
+    const t = clock.getElapsedTime();
+    if (starsMaterial) starsMaterial.uniforms.uTime.value = t;
+
+    // Update fireworks
+    for (let i = fireworkList.length - 1; i >= 0; i--) {
+      const fw = fireworkList[i];
+      fw.life += dt;
+
+      const posArr = fw.geo.attributes.position.array;
+      const count = posArr.length / 3;
+
+      // Обновляем частицы
+      for (let j = 0; j < count; j++) {
+        const vx = fw.velocities[j*3];
+        const vy = fw.velocities[j*3+1];
+        const vz = fw.velocities[j*3+2];
+
+        posArr[j*3]   += vx;
+        posArr[j*3+1] += vy;
+        posArr[j*3+2] += vz;
+
+        // Замедление
+        fw.velocities[j*3]   *= 0.965;
+        fw.velocities[j*3+1] *= 0.965;
+        fw.velocities[j*3+2] *= 0.965;
+
+        // Гравитация (лёгкая)
+        fw.velocities[j*3+1] -= 0.05;
+      }
+      fw.geo.attributes.position.needsUpdate = true;
+
+      // Затухание
+      const opacity = Math.max(0, 1 - fw.life / fw.maxLife);
+      fw.mat.uniforms.uOpacity.value = opacity;
+
+      // Текст
+      fw.textLife += dt;
+      if (fw.textSprite) {
+        const tp = fw.textSprite.material;
+        if (fw.textLife < 0.8) {
+          // Появление
+          tp.opacity = fw.textLife / 0.8;
+        } else if (fw.textLife < fw.textMaxLife - 1.2) {
+          // Держим
+          tp.opacity = 1;
+        } else if (fw.textLife < fw.textMaxLife) {
+          // Плавно исчезает
+          tp.opacity = 1 - (fw.textLife - (fw.textMaxLife - 1.2)) / 1.2;
+        } else {
+          tp.opacity = 0;
+        }
+
+        // Лёгкое всплытие текста
+        fw.textSprite.position.y += dt * 12;
+      }
+
+      // Удаление
+      if (fw.life >= fw.maxLife && fw.textLife >= fw.textMaxLife) {
+        world.remove(fw.points);
+        fw.geo.dispose();
+        fw.mat.dispose();
+        if (fw.textSprite) {
+          world.remove(fw.textSprite);
+          if (fw.textSprite.material.map) fw.textSprite.material.map.dispose();
+          fw.textSprite.material.dispose();
+        }
+        fireworkList.splice(i, 1);
+      }
+    }
+
+    // Rotation
+    if (useDeviceOrientation && hasOrientation) {
+      let alphaDelta = deviceAlpha - initialAlpha;
+      while (alphaDelta > 180) alphaDelta -= 360;
+      while (alphaDelta < -180) alphaDelta += 360;
+      targetRotationY = THREE.MathUtils.degToRad(alphaDelta);
+      targetRotationX = THREE.MathUtils.degToRad(90 - deviceBeta);
+    }
+
+    currentRotationY += (targetRotationY - currentRotationY) * 0.09;
+    currentRotationX += (targetRotationX - currentRotationX) * 0.09;
+
+    world.rotation.y = currentRotationY;
+    world.rotation.x = currentRotationX;
+
+    renderer.render(scene, camera);
+  }
+
+  // ---------- DEVICE ORIENTATION ----------
+  function onDeviceOrientation(event) {
+    if (event.alpha === null || event.alpha === undefined) return;
+    if (initialAlpha === null) initialAlpha = event.alpha;
+    hasOrientation = true;
+    deviceAlpha = event.alpha;
+    deviceBeta = event.beta !== null ? event.beta : 90;
+  }
+
+  // ---------- MOUSE ----------
+  function onMouseMove(e) {
+    if (useDeviceOrientation && hasOrientation) return;
+    if (dragging) return;
+    const x = (e.clientX / window.innerWidth) * 2 - 1;
+    const y = (e.clientY / window.innerHeight) * 2 - 1;
+    targetRotationY = -x * Math.PI * 1.2;
+    targetRotationX = -y * Math.PI * 0.5;
+  }
+
+  // ---------- TOUCH DRAG (fallback) ----------
+  function onTouchStart(e) {
+    const t = e.touches[0];
+    dragStartX = t.clientX;
+    dragStartY = t.clientY;
+    dragStartRotX = targetRotationX;
+    dragStartRotY = targetRotationY;
+    dragging = true;
+    dragMoved = false;
+    if (useDeviceOrientation && hasOrientation) return;
+  }
+
+  function onTouchMove(e) {
+    if (useDeviceOrientation && hasOrientation) return;
+    if (!dragging) return;
+    const t = e.touches[0];
+    const dx = t.clientX - dragStartX;
+    const dy = t.clientY - dragStartY;
+    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) dragMoved = true;
+    targetRotationY = dragStartRotY + dx * 0.006;
+    targetRotationX = dragStartRotX + dy * 0.006;
+    targetRotationX = Math.max(-Math.PI / 2.2, Math.min(Math.PI / 2.2, targetRotationX));
+  }
+
+  function onTouchEnd() {
+    dragging = false;
+  }
+
+  // ---------- CLICK / TAP → новый салют в направлении курсора ----------
+  function onCanvasClick(e) {
+    if (!renderer) return;
+    if (introEl && introEl.style.display !== 'none') return;
+    if (dragMoved) return;
+
+    const nx = (e.clientX / window.innerWidth) * 2 - 1;
+    const ny = -((e.clientY / window.innerHeight) * 2 - 1);
+
+    // Направление в текущем повёрнутом мире
+    const dirLocal = new THREE.Vector3(nx, ny, -1).normalize();
+    dirLocal.applyEuler(new THREE.Euler(0, -currentRotationY, 0));
+    dirLocal.applyEuler(new THREE.Euler(-currentRotationX, 0, 0));
+
+    const dist = 700 + Math.random() * 200;
+    const target = dirLocal.multiplyScalar(dist);
+
+    spawnFirework(target);
+  }
+
+  // ---------- iOS PERMISSION ----------
+  async function requestOrientation() {
+    if (typeof DeviceOrientationEvent === 'undefined') return false;
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+      try {
+        const state = await DeviceOrientationEvent.requestPermission();
+        return state === 'granted';
+      } catch (err) { return false; }
+    }
+    return true;
+  }
+
+  // ---------- RESIZE ----------
+  function onResize() {
+    if (!camera || !renderer) return;
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  }
+
+  // ---------- START ----------
+  startBtn.addEventListener('click', async () => {
+    loadingText.classList.add('show');
+    const granted = await requestOrientation();
+    if (granted) {
+      window.addEventListener('deviceorientation', onDeviceOrientation, true);
+      useDeviceOrientation = true;
+    }
+    introEl.classList.add('hide');
+
+    setTimeout(() => {
+      introEl.style.display = 'none';
+      loadingText.classList.remove('show');
+      initThree();
+
+      // Первый салют сразу
+      setTimeout(() => spawnFirework(), 500);
+
+      // Автоматические салюты
+      autoTimer = setInterval(() => {
+        spawnFirework();
+        // Иногда — двойной залп
+        if (Math.random() < 0.35) {
+          setTimeout(() => spawnFirework(), 350);
+        }
+      }, AUTO_INTERVAL);
+
+      // Fallback: если гироскоп не пришёл
+      setTimeout(() => {
+        if (useDeviceOrientation && !hasOrientation) {
+          useDeviceOrientation = false;
+          hintEl.textContent = '👆 Проведи пальцем или тапни — запусти салют';
+          hintEl.classList.remove('show');
+          void hintEl.offsetWidth;
+          hintEl.classList.add('show');
+        }
+      }, 2000);
+    }, 700);
+  });
+
+})();
+</script>
+</body>
+</html>
