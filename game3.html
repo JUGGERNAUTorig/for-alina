@@ -152,6 +152,60 @@
     100% { opacity: 0; }
   }
 
+  .fireworks-btn {
+    position: fixed;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%) translateY(30px);
+    z-index: 60;
+    padding: 15px 38px;
+    border: 2px solid #ff8ec4;
+    border-radius: 14px;
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.32), rgba(255, 105, 180, 0.1));
+    color: #ffd6ea;
+    font-family: 'Georgia', serif;
+    font-size: 14px;
+    font-weight: bold;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.35s ease;
+    box-shadow: 0 0 30px rgba(255, 105, 180, 0.45);
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+    animation: btnPulsePink 2.5s ease-in-out infinite;
+  }
+  .fireworks-btn.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+    pointer-events: auto;
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 1.4, 0.4, 1), background 0.35s ease, box-shadow 0.35s ease;
+  }
+  .fireworks-btn::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 217, 228, 0.55), transparent);
+    animation: shine 3s infinite;
+  }
+  @keyframes btnPulsePink {
+    0%, 100% { box-shadow: 0 0 30px rgba(255, 105, 180, 0.45); }
+    50%      { box-shadow: 0 0 60px rgba(255, 105, 180, 0.9); }
+  }
+  .fireworks-btn:hover:not(:disabled) {
+    background: linear-gradient(135deg, rgba(255, 105, 180, 0.55), rgba(255, 105, 180, 0.2));
+    transform: translateX(-50%) translateY(-3px) scale(1.04);
+    color: #fff;
+  }
+  .fireworks-btn:active:not(:disabled) { transform: translateX(-50%) scale(0.97); }
+  .fireworks-btn:disabled {
+    opacity: 0.6;
+    cursor: default;
+    animation: none;
+  }
+
   .loading-text {
     position: fixed;
     inset: 0;
@@ -167,6 +221,14 @@
     transition: opacity 0.5s ease;
   }
   .loading-text.show { opacity: 1; }
+
+  @media (max-width: 480px) {
+    .intro-h1 { font-size: 22px; }
+    .intro-sub { font-size: 13.5px; margin-bottom: 32px; }
+    .intro-btn { font-size: 14px; padding: 15px 40px; letter-spacing: 4px; }
+    .fireworks-btn { font-size: 12.5px; padding: 13px 28px; letter-spacing: 2px; bottom: 72px; }
+    .hint { font-size: 11px; padding: 8px 16px; bottom: 24px; }
+  }
 </style>
 </head>
 <body>
@@ -188,6 +250,8 @@
 
 <div class="loading-text" id="loadingText">Зажигаем звёзды...</div>
 
+<button class="fireworks-btn" id="fireworksBtn">🎆 Запустить салют</button>
+
 <div class="hint" id="hint">🌌 Поворачивайся, читай по кругу</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -196,27 +260,42 @@
   'use strict';
 
   /* ============================================================
-     ⚙️ НАСТРОЙКА ТЕКСТА
-     — Одна длинная строка, идёт по всему небу как кольцо 360°
+     ⚙️ НАСТРОЙКА
      ============================================================ */
   const SKY_TEXT =
     "Это всё для тебя, моя любимая · я очень долго это делал · " +
     "и сделал только потому, что очень сильно тебя люблю · " +
     "моя родная · моя единственная · моя навсегда";
 
-  // Высота надписи на небе (в условных единицах).
-  // 220 — комфортно читается, можно увеличить до 300-350
-  const TEXT_HEIGHT = 240;
+  const FIREWORK_TEXT = "Я тебя очень сильно люблю";
 
-  // Максимальная ширина текстуры (если текст не влезает — шрифт автоматически уменьшится)
+  const TEXT_HEIGHT = 240;
   const MAX_TEXTURE_WIDTH = 8000;
 
-  // Радиус кольца надписи. Чем больше — тем дальше она от тебя
-  const TEXT_RADIUS_FALLBACK = 800;
+  // ⏱ Частота
+  const AUTO_FIREWORK_INTERVAL = 900;    // салюты каждые 0.9 сек
+  const AUTO_TEXT_INTERVAL     = 1300;   // тексты каждые 1.3 сек
+
+  // 🎯 Насколько широко разбрасывать объекты перед камерой (в градусах)
+  // Текст появляется в узком конусе, чтобы быть прямо перед глазами
+  const TEXT_CONE_H = 45;   // ±45° по горизонтали
+  const TEXT_CONE_V = 28;   // ±28° по вертикали
+
+  // Салюты — чуть шире, но тоже в основном впереди
+  const FIREWORK_CONE_H = 75;
+  const FIREWORK_CONE_V = 45;
+
+  const FIREWORK_COLORS = [
+    0xffd97d, 0xffb6c1, 0xffffff, 0xc8a2ff, 0xa8e6ff, 0xff9ec4
+  ];
+  const PARTICLES_PER_BURST = 80;
+  const DIST_MIN = 650;
+  const DIST_MAX = 900;
   /* ============================================================ */
 
   const introEl = document.getElementById('intro');
   const startBtn = document.getElementById('startBtn');
+  const fireworksBtn = document.getElementById('fireworksBtn');
   const hintEl = document.getElementById('hint');
   const loadingText = document.getElementById('loadingText');
 
@@ -228,15 +307,23 @@
 
   let useDeviceOrientation = false;
   let hasOrientation = false;
-  let initialAlpha = null;
-  let deviceAlpha = 0;
-  let deviceBeta = 90;
-
   let dragging = false;
   let dragStartX = 0, dragStartY = 0;
   let dragStartRotX = 0, dragStartRotY = 0;
-
   let starsMaterial = null;
+
+  let fireworksEnabled = false;
+  let autoFireworkTimer = null;
+  let autoTextTimer = null;
+
+  let fireworkList = [];
+  let textList = [];
+
+  /* ---------- СГЛАЖИВАНИЕ ДАТЧИКОВ ---------- */
+  let totalAlpha = 0;
+  let lastRawAlpha = null;
+  let calibratedBeta = null;
+  let smoothBetaOffset = 0;
 
   function initThree() {
     scene = new THREE.Scene();
@@ -257,7 +344,7 @@
     createStars();
     createBigStars();
     createNebula();
-    createTextCylinder(); // последним — поверх всего
+    createTextCylinder();
 
     animate();
 
@@ -266,11 +353,11 @@
     window.addEventListener('touchstart', onTouchStart, { passive: true });
     window.addEventListener('touchmove', onTouchMove, { passive: true });
     window.addEventListener('touchend', onTouchEnd);
+    document.addEventListener('click', onCanvasClick);
 
     setTimeout(() => hintEl.classList.add('show'), 500);
   }
 
-  // ---------- ОБЫЧНЫЕ ЗВЁЗДЫ ----------
   function createStars() {
     const count = 2500;
     const geo = new THREE.BufferGeometry();
@@ -341,7 +428,6 @@
     skyGroup.add(new THREE.Points(geo, starsMaterial));
   }
 
-  // ---------- КРУПНЫЕ СВЕТЯЩИЕСЯ ЗВЁЗДЫ ----------
   function createBigStars() {
     const count = 45;
     const geo = new THREE.BufferGeometry();
@@ -386,7 +472,6 @@
     return new THREE.CanvasTexture(c);
   }
 
-  // ---------- ТУМАННОСТИ ----------
   function createNebula() {
     const c = document.createElement('canvas');
     c.width = 512;
@@ -423,9 +508,7 @@
     }
   }
 
-  // ---------- ТЕКСТ КАК КОЛЬЦО ВОКРУГ НЕБА ----------
   function createTextCylinder() {
-    // 1. Подбираем размер шрифта, чтобы текст влез в текстуру
     const measureCanvas = document.createElement('canvas');
     const mctx = measureCanvas.getContext('2d');
 
@@ -441,10 +524,8 @@
     }
 
     const canvasWidth = Math.min(MAX_TEXTURE_WIDTH, Math.ceil(textWidth + sidePadding * 2));
-    // Высота текстуры — в 4 раза меньше высоты шрифта (компактная полоса)
     const canvasHeight = Math.round(fontSize * 3);
 
-    // 2. Рисуем текст с красивым свечением
     const canvas = document.createElement('canvas');
     canvas.width = canvasWidth;
     canvas.height = canvasHeight;
@@ -458,27 +539,22 @@
     const cx = canvasWidth / 2;
     const cy = canvasHeight / 2;
 
-    // Внешнее свечение
     ctx.fillStyle = '#ffe9b5';
     ctx.shadowColor = '#ffd97d';
     ctx.shadowBlur = 80;
     ctx.fillText(SKY_TEXT, cx, cy);
 
-    // Внутреннее свечение
     ctx.shadowBlur = 30;
     ctx.fillText(SKY_TEXT, cx, cy);
 
-    // Резкий контур
     ctx.shadowBlur = 0;
     ctx.fillStyle = '#fff8e0';
     ctx.fillText(SKY_TEXT, cx, cy);
 
-    // Ещё раз для яркости
     ctx.shadowBlur = 12;
     ctx.shadowColor = '#fff3c8';
     ctx.fillText(SKY_TEXT, cx, cy);
 
-    // 3. Текстура
     const tex = new THREE.CanvasTexture(canvas);
     tex.anisotropy = renderer.capabilities.getMaxAnisotropy();
     tex.minFilter = THREE.LinearFilter;
@@ -486,15 +562,9 @@
     tex.wrapS = THREE.ClampToEdgeWrapping;
     tex.wrapT = THREE.ClampToEdgeWrapping;
 
-    // 4. Радиус цилиндра, чтобы высота надписи = TEXT_HEIGHT
-    // Формула: H_cylinder = (2πR) * canvasHeight / canvasWidth
-    // → R = H_cylinder * canvasWidth / (2π * canvasHeight)
     const radius = (TEXT_HEIGHT * canvasWidth) / (2 * Math.PI * canvasHeight);
-
-    // 5. Цилиндр (открытый сверху и снизу, видно изнутри)
     const geometry = new THREE.CylinderGeometry(radius, radius, TEXT_HEIGHT, 128, 1, true);
 
-    // Flip U так, чтобы текст читался правильно изнутри
     const uvAttr = geometry.attributes.uv;
     for (let i = 0; i < uvAttr.count; i++) {
       uvAttr.setX(i, 1 - uvAttr.getX(i));
@@ -516,43 +586,329 @@
     skyGroup.add(cylinder);
   }
 
-  // ---------- АНИМАЦИЯ ----------
+  /* ============================================================
+     🎯 НАПРАВЛЕНИЕ ВЗГЛЯДА В ЛОКАЛЬНЫХ КООРДИНАТАХ skyGroup
+     ============================================================ */
+  function getForwardDirectionLocal() {
+    // Мировое направление "куда смотрит камера" — это (0, 0, -1)
+    // Переводим его в локальные координаты skyGroup (обратные повороты)
+    const euler = new THREE.Euler(-currentRotationX, -currentRotationY, 0, 'YXZ');
+    return new THREE.Vector3(0, 0, -1).applyEuler(euler).normalize();
+  }
+
+  // Возвращает точку в конусе перед взглядом (в локальных координатах skyGroup)
+  function getPointInCone(angleH, angleV, distMin, distMax) {
+    const forward = getForwardDirectionLocal();
+
+    // Строим ортонормированный базис вокруг forward
+    const zAxis = forward.clone();
+    let xAxis = new THREE.Vector3(0, 1, 0).cross(zAxis);
+    if (xAxis.lengthSq() < 0.001) xAxis.set(1, 0, 0);
+    xAxis.normalize();
+    const yAxis = zAxis.clone().cross(xAxis).normalize();
+
+    const randH = THREE.MathUtils.degToRad((Math.random() - 0.5) * 2 * angleH);
+    const randV = THREE.MathUtils.degToRad((Math.random() - 0.5) * 2 * angleV);
+
+    // Смещаем forward на tangents
+    const dir = zAxis.clone()
+      .add(xAxis.clone().multiplyScalar(Math.tan(randH)))
+      .add(yAxis.clone().multiplyScalar(Math.tan(randV)))
+      .normalize();
+
+    const dist = distMin + Math.random() * (distMax - distMin);
+    return dir.multiplyScalar(dist);
+  }
+
+  /* ============================================================
+     САЛЮТ
+     ============================================================ */
+  function spawnFirework(centerPos) {
+    if (!skyGroup) return;
+
+    let bx, by, bz;
+    if (centerPos) {
+      bx = centerPos.x; by = centerPos.y; bz = centerPos.z;
+    } else {
+      const pos = getPointInCone(FIREWORK_CONE_H, FIREWORK_CONE_V, DIST_MIN, DIST_MAX);
+      bx = pos.x; by = pos.y; bz = pos.z;
+    }
+
+    const color = FIREWORK_COLORS[Math.floor(Math.random() * FIREWORK_COLORS.length)];
+    const color2 = FIREWORK_COLORS[Math.floor(Math.random() * FIREWORK_COLORS.length)];
+
+    const count = PARTICLES_PER_BURST;
+    const positions = new Float32Array(count * 3);
+    const colors = new Float32Array(count * 3);
+    const velocities = new Float32Array(count * 3);
+    const sizes = new Float32Array(count);
+
+    const c1 = new THREE.Color(color);
+    const c2 = new THREE.Color(color2);
+
+    for (let i = 0; i < count; i++) {
+      positions[i*3] = bx;
+      positions[i*3+1] = by;
+      positions[i*3+2] = bz;
+
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      const speed = 4 + Math.random() * 8;
+
+      velocities[i*3]   = Math.sin(phi) * Math.cos(theta) * speed;
+      velocities[i*3+1] = Math.cos(phi) * speed;
+      velocities[i*3+2] = Math.sin(phi) * Math.sin(theta) * speed;
+
+      const mix = Math.random();
+      const cc = c1.clone().lerp(c2, mix);
+      colors[i*3] = cc.r;
+      colors[i*3+1] = cc.g;
+      colors[i*3+2] = cc.b;
+
+      sizes[i] = 2 + Math.random() * 4;
+    }
+
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    geo.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
+
+    const mat = new THREE.ShaderMaterial({
+      uniforms: { uOpacity: { value: 1.0 } },
+      vertexShader: [
+        'attribute float size;',
+        'attribute vec3 color;',
+        'varying vec3 vColor;',
+        'void main() {',
+        '  vColor = color;',
+        '  vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);',
+        '  gl_PointSize = size * (450.0 / -mvPosition.z);',
+        '  gl_Position = projectionMatrix * mvPosition;',
+        '}'
+      ].join('\n'),
+      fragmentShader: [
+        'varying vec3 vColor;',
+        'uniform float uOpacity;',
+        'void main() {',
+        '  vec2 c = gl_PointCoord - 0.5;',
+        '  float d = length(c);',
+        '  if (d > 0.5) discard;',
+        '  float alpha = smoothstep(0.5, 0.0, d);',
+        '  alpha = pow(alpha, 1.8);',
+        '  gl_FragColor = vec4(vColor, alpha * uOpacity);',
+        '}'
+      ].join('\n'),
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+
+    const points = new THREE.Points(geo, mat);
+    skyGroup.add(points);
+
+    fireworkList.push({
+      points, geo, mat, velocities, sizes,
+      life: 0,
+      maxLife: 3.6
+    });
+  }
+
+  /* ============================================================
+     ТЕКСТ (в узком конусе прямо перед глазами)
+     ============================================================ */
+  function spawnFloatingText() {
+    if (!skyGroup) return;
+
+    // Узкий конус — текст появляется в основном прямо перед глазами
+    const pos = getPointInCone(TEXT_CONE_H, TEXT_CONE_V, DIST_MIN * 0.9, DIST_MAX * 0.9);
+
+    const sprite = createTextSprite(FIREWORK_TEXT);
+    sprite.position.copy(pos);
+    sprite.material.opacity = 0;
+    skyGroup.add(sprite);
+
+    textList.push({
+      sprite,
+      life: 0,
+      maxLife: 3.2
+    });
+  }
+
+  function createTextSprite(text) {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+
+    const fontSize = 90;
+    ctx.font = 'bold ' + fontSize + 'px Georgia, "Times New Roman", serif';
+    const metrics = ctx.measureText(text);
+
+    canvas.width = Math.ceil(metrics.width + 200);
+    canvas.height = fontSize * 2.4;
+
+    const ctx2 = canvas.getContext('2d');
+    ctx2.clearRect(0, 0, canvas.width, canvas.height);
+    ctx2.font = 'bold ' + fontSize + 'px Georgia, "Times New Roman", serif';
+    ctx2.textAlign = 'center';
+    ctx2.textBaseline = 'middle';
+
+    const cx = canvas.width / 2;
+    const cy = canvas.height / 2;
+
+    ctx2.fillStyle = '#fff2c8';
+    ctx2.shadowColor = '#ffd97d';
+    ctx2.shadowBlur = 60;
+    ctx2.fillText(text, cx, cy);
+
+    ctx2.shadowBlur = 25;
+    ctx2.fillText(text, cx, cy);
+
+    ctx2.shadowBlur = 0;
+    ctx2.fillStyle = '#fff8e0';
+    ctx2.fillText(text, cx, cy);
+
+    const tex = new THREE.CanvasTexture(canvas);
+    tex.minFilter = THREE.LinearFilter;
+
+    const mat = new THREE.SpriteMaterial({
+      map: tex,
+      transparent: true,
+      opacity: 0,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      depthTest: false
+    });
+
+    const sprite = new THREE.Sprite(mat);
+    sprite.scale.set(canvas.width * 0.5, canvas.height * 0.5, 1);
+    return sprite;
+  }
+
+  /* ============================================================
+     ОБНОВЛЕНИЕ
+     ============================================================ */
+  function updateFireworks(dt) {
+    for (let i = fireworkList.length - 1; i >= 0; i--) {
+      const fw = fireworkList[i];
+      fw.life += dt;
+
+      const posArr = fw.geo.attributes.position.array;
+      const count = posArr.length / 3;
+
+      for (let j = 0; j < count; j++) {
+        const vx = fw.velocities[j*3];
+        const vy = fw.velocities[j*3+1];
+        const vz = fw.velocities[j*3+2];
+
+        posArr[j*3]   += vx;
+        posArr[j*3+1] += vy;
+        posArr[j*3+2] += vz;
+
+        fw.velocities[j*3]   *= 0.965;
+        fw.velocities[j*3+1] *= 0.965;
+        fw.velocities[j*3+2] *= 0.965;
+        fw.velocities[j*3+1] -= 0.05;
+      }
+      fw.geo.attributes.position.needsUpdate = true;
+
+      const opacity = Math.max(0, 1 - fw.life / fw.maxLife);
+      fw.mat.uniforms.uOpacity.value = opacity;
+
+      if (fw.life >= fw.maxLife) {
+        skyGroup.remove(fw.points);
+        fw.geo.dispose();
+        fw.mat.dispose();
+        fireworkList.splice(i, 1);
+      }
+    }
+  }
+
+  function updateTexts(dt) {
+    for (let i = textList.length - 1; i >= 0; i--) {
+      const tItem = textList[i];
+      tItem.life += dt;
+      const p = tItem.sprite.material;
+
+      if (tItem.life < 0.6) {
+        p.opacity = tItem.life / 0.6;
+      } else if (tItem.life < tItem.maxLife - 0.9) {
+        p.opacity = 1;
+      } else if (tItem.life < tItem.maxLife) {
+        p.opacity = 1 - (tItem.life - (tItem.maxLife - 0.9)) / 0.9;
+      } else {
+        p.opacity = 0;
+      }
+
+      tItem.sprite.position.y += dt * 8;
+
+      if (tItem.life >= tItem.maxLife) {
+        skyGroup.remove(tItem.sprite);
+        if (tItem.sprite.material.map) tItem.sprite.material.map.dispose();
+        tItem.sprite.material.dispose();
+        textList.splice(i, 1);
+      }
+    }
+  }
+
+  /* ---------- АНИМАЦИЯ ---------- */
   const clock = new THREE.Clock();
 
   function animate() {
     requestAnimationFrame(animate);
 
+    const dt = Math.min(clock.getDelta(), 0.05);
     const t = clock.getElapsedTime();
     if (starsMaterial) starsMaterial.uniforms.uTime.value = t;
 
     if (useDeviceOrientation && hasOrientation) {
-      let alphaDelta = deviceAlpha - initialAlpha;
-      while (alphaDelta > 180) alphaDelta -= 360;
-      while (alphaDelta < -180) alphaDelta += 360;
-
-      targetRotationY = THREE.MathUtils.degToRad(alphaDelta);
-      targetRotationX = THREE.MathUtils.degToRad(90 - deviceBeta);
+      targetRotationY = THREE.MathUtils.degToRad(-totalAlpha);
+      targetRotationX = THREE.MathUtils.degToRad(smoothBetaOffset);
     }
 
-    currentRotationY += (targetRotationY - currentRotationY) * 0.09;
-    currentRotationX += (targetRotationX - currentRotationX) * 0.09;
+    const lerpFactor = 0.06;
+    currentRotationY += (targetRotationY - currentRotationY) * lerpFactor;
+    currentRotationX += (targetRotationX - currentRotationX) * lerpFactor;
 
     skyGroup.rotation.y = currentRotationY;
     skyGroup.rotation.x = currentRotationX;
 
+    if (fireworksEnabled) {
+      updateFireworks(dt);
+      updateTexts(dt);
+    }
+
     renderer.render(scene, camera);
   }
 
-  // ---------- ДАТЧИКИ ----------
+  /* ---------- ДАТЧИКИ ---------- */
   function onDeviceOrientation(event) {
     if (event.alpha === null || event.alpha === undefined) return;
-    if (initialAlpha === null) initialAlpha = event.alpha;
+    const rawAlpha = event.alpha;
+    const rawBeta = event.beta !== null ? event.beta : 90;
+
+    if (lastRawAlpha === null) {
+      lastRawAlpha = rawAlpha;
+      calibratedBeta = rawBeta;
+      totalAlpha = 0;
+      smoothBetaOffset = 0;
+      hasOrientation = true;
+      return;
+    }
+
+    let deltaAlpha = rawAlpha - lastRawAlpha;
+    while (deltaAlpha > 180) deltaAlpha -= 360;
+    while (deltaAlpha < -180) deltaAlpha += 360;
+    if (Math.abs(deltaAlpha) > 0.15) {
+      totalAlpha += deltaAlpha;
+      lastRawAlpha = rawAlpha;
+    }
+
+    const betaOffset = rawBeta - calibratedBeta;
+    smoothBetaOffset = smoothBetaOffset * 0.85 + betaOffset * 0.15;
+    smoothBetaOffset = Math.max(-60, Math.min(60, smoothBetaOffset));
+
     hasOrientation = true;
-    deviceAlpha = event.alpha;
-    deviceBeta = event.beta !== null ? event.beta : 90;
   }
 
-  // ---------- МЫШЬ ----------
   function onMouseMove(e) {
     if (useDeviceOrientation && hasOrientation) return;
     const x = (e.clientX / window.innerWidth) * 2 - 1;
@@ -561,7 +917,6 @@
     targetRotationX = -y * Math.PI * 0.5;
   }
 
-  // ---------- ПАЛЕЦ ----------
   function onTouchStart(e) {
     if (useDeviceOrientation && hasOrientation) return;
     const t = e.touches[0];
@@ -587,7 +942,25 @@
     dragging = false;
   }
 
-  // ---------- iOS РАЗРЕШЕНИЕ ----------
+  function onCanvasClick(e) {
+    if (!renderer || !fireworksEnabled) return;
+    if (introEl && introEl.style.display !== 'none') return;
+    if (e.target && e.target.tagName === 'BUTTON') return;
+
+    const nx = (e.clientX / window.innerWidth) * 2 - 1;
+    const ny = -((e.clientY / window.innerHeight) * 2 - 1);
+
+    // Направление тапа в локальных координатах skyGroup
+    const euler = new THREE.Euler(-currentRotationX, -currentRotationY, 0, 'YXZ');
+    const dirLocal = new THREE.Vector3(nx, ny, -1).normalize().applyEuler(euler);
+
+    const dist = 700 + Math.random() * 200;
+    const target = dirLocal.multiplyScalar(dist);
+
+    spawnFirework(target);
+    setTimeout(spawnFloatingText, 150);
+  }
+
   async function requestOrientation() {
     if (typeof DeviceOrientationEvent === 'undefined') return false;
     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
@@ -601,7 +974,6 @@
     return true;
   }
 
-  // ---------- RESIZE ----------
   function onResize() {
     if (!camera || !renderer) return;
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -609,7 +981,7 @@
     renderer.setSize(window.innerWidth, window.innerHeight);
   }
 
-  // ---------- START ----------
+  /* ---------- СТАРТ ---------- */
   startBtn.addEventListener('click', async () => {
     loadingText.classList.add('show');
 
@@ -627,6 +999,10 @@
       initThree();
 
       setTimeout(() => {
+        fireworksBtn.classList.add('show');
+      }, 800);
+
+      setTimeout(() => {
         if (useDeviceOrientation && !hasOrientation) {
           useDeviceOrientation = false;
           hintEl.textContent = '👆 Проведи пальцем, чтобы осмотреться';
@@ -636,6 +1012,38 @@
         }
       }, 2000);
     }, 700);
+  });
+
+  fireworksBtn.addEventListener('click', () => {
+    if (fireworksEnabled) return;
+    fireworksEnabled = true;
+
+    fireworksBtn.textContent = '🎆 Салют запущен';
+    fireworksBtn.disabled = true;
+
+    hintEl.textContent = '🎆 Тапни по небу — запусти свой салют';
+    hintEl.classList.remove('show');
+    void hintEl.offsetWidth;
+    hintEl.classList.add('show');
+
+    // Первые залпы
+    spawnFirework();
+    setTimeout(spawnFloatingText, 200);
+    setTimeout(spawnFirework, 400);
+    setTimeout(spawnFloatingText, 700);
+
+    // Салюты
+    autoFireworkTimer = setInterval(() => {
+      spawnFirework();
+      if (Math.random() < 0.4) {
+        setTimeout(() => spawnFirework(), 200);
+      }
+    }, AUTO_FIREWORK_INTERVAL);
+
+    // Тексты
+    autoTextTimer = setInterval(() => {
+      spawnFloatingText();
+    }, AUTO_TEXT_INTERVAL);
   });
 
 })();
