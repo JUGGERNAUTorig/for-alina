@@ -92,8 +92,8 @@
     font-style: italic;
     letter-spacing: 1px;
     margin-bottom: 40px;
-    line-height: 1.6;
-    max-width: 440px;
+    line-height: 1.7;
+    max-width: 460px;
   }
   .intro-start-btn {
     padding: 18px 52px;
@@ -736,10 +736,11 @@
 <div class="intro-screen" id="introScreen">
   <div class="intro-emojis">✊ ✌️ ✋</div>
   <div class="intro-orn">✦ ✦ ✦</div>
-  <h1 class="intro-h1">Готова <b>сыграть</b>?</h1>
+  <h1 class="intro-h1">Сыграем на <b>удачу</b>?</h1>
   <p class="intro-sub">
-    Правила простые: победи меня <b style="color:#ffd97d;">3 раза</b> — и получишь сюрприз.<br>
-    Но предупреждаю — я <b style="color:#ffd97d;">очень удачливый</b> 😏
+    Просто ради интереса —<br>
+    кто из нас <b style="color:#ffd97d;">счастливее</b> сегодня.<br>
+    А сюрприз тебя ждёт в любом случае 💛
   </p>
   <button class="intro-start-btn" id="startBtn">Начать игру</button>
   <div class="intro-footer">Сделано с любовью 💛</div>
@@ -749,7 +750,7 @@
 <div class="screen" id="screen-rps">
   <div class="ornament">✦ ✦ ✦</div>
   <h1>Камень, ножницы, <b>бумага</b></h1>
-  <p class="subtitle">Победи меня 3 раза — и я покажу тебе кое-что 💛</p>
+  <p class="subtitle">Просто сыграем — а дальше будет сюрприз 💛</p>
 
   <div class="score">
     <div class="score-item">
@@ -874,9 +875,13 @@
   const LOSS_TARGET = 3;
   const KISS_TARGET = 100;
 
-  const WIN_CHANCE  = 2;
+  /* ---------- ШАНСЫ ----------
+     WIN_CHANCE = 0 → победить невозможно
+     DRAW_CHANCE = 8 → 8% ничьих
+     остальное → проигрыш
+  */
+  const WIN_CHANCE  = 0;
   const DRAW_CHANCE = 8;
-
   /* ============================================================ */
 
   const options = ['rock', 'scissors', 'paper'];
